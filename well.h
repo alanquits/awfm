@@ -17,6 +17,14 @@ class Well
     Timeseries q_;  // observed pumping
 public:
     Well(std::string name, double x, double y, double rw);
+
+    std::string name() { return name_; }
+    double x() { return x_; }
+    double y() { return y_; }
+    double rw() { return rw_; }
+
+    Timeseries wl() { return wl_; }
+    Timeseries q() { return q_; }
 };
 
 #endif // WELL_H
