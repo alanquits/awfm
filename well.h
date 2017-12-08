@@ -25,6 +25,9 @@ public:
 
     Timeseries wl() { return wl_; }
     Timeseries q() { return q_; }
+
+    double distanceTo(double x, double y);
+    double distanceTo(Well &w);
 };
 
 #endif // WELL_H

@@ -8,11 +8,23 @@ SOURCES += main.cpp \
     measure.cpp \
     well.cpp \
     timeseries.cpp \
-    theis.cpp
+    theis.cpp \
+    io.cpp \
+    specialfunctions.cpp \
+    slatec.f \
+    testing.cpp
 
 HEADERS += \
     abstractaquiferdrawdownmodel.h \
     measure.h \
     well.h \
     timeseries.h \
-    theis.h
+    theis.h \
+    io.h \
+    specialfunctions.h \
+    testing.h
+
+LIBS += -lgfortran
+
+DISTFILES += \
+    slatec.f

@@ -16,9 +16,13 @@ public:
     Measure(double t, double v);
     Measure(double t);
 
-    double t() { return t(); }
-    double v() { return v(); }
+    double t() { return t_; }
+    double v() { return v_; }
     MeasureState measureState() { return measureState_; }
+
+    void absolute();
+    void scale(double s);
+    void zeroBelow(double min_value);
 };
 
 #endif // MEASURE_H

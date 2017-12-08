@@ -2,12 +2,16 @@
 #define THEIS_H
 
 #include "abstractaquiferdrawdownmodel.h"
+#include "specialfunctions.h"
+#include "timeseries.h"
+#include "well.h"
 
-class Theis : AbstractAquiferDrawdownModel
+class Theis : public AbstractAquiferDrawdownModel
 {
 private:
     double T_;
     double S_;
+
 
 public:
     Theis(double S, double T);
