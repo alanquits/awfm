@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "measure.h"
+#include "utility.h"
 
 class Timeseries
 {
@@ -41,6 +42,7 @@ public:
     void consolidateZeros();
     Timeseries deltaValues();
     void dtdv();
+    bool isEqual(Timeseries &ts, double tol=1e-6);
     double linearInterpolateValueAtTime(double t);
     void projectOntoLine(double tmin, double tmax, double dt);
     void scale(double s);

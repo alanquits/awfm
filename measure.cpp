@@ -27,5 +27,5 @@ void Measure::scale(double s)
 
 void Measure::zeroBelow(double min_value)
 {
-    v_ = v_ < min_value ? 0 : v_;
+    v_ = fabs(v_) < min_value ? 0 : v_;
 }

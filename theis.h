@@ -16,7 +16,7 @@ private:
 public:
     Theis(double S, double T);
 
-    virtual double drawdown(double x, double y, double t);
+    virtual double drawdownAtWell(Well &w, double x, double y, double t);
 };
 
 #endif // THEIS_H

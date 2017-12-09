@@ -18,7 +18,8 @@ protected:
 public:
     AbstractAquiferDrawdownModel();
 
-    virtual double drawdown(double x, double y, double t)=0;
+    double drawdown(std::vector<Well> &wells, double x, double y, double t);
+    virtual double drawdownAtWell(Well &well, double x, double y, double t)=0;
 
     void setWells(std::vector<Well> *wells) { wells_ = wells; }
 };

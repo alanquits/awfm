@@ -12,7 +12,8 @@ SOURCES += main.cpp \
     io.cpp \
     specialfunctions.cpp \
     slatec.f \
-    testing.cpp
+    testing.cpp \
+    utility.cpp
 
 HEADERS += \
     abstractaquiferdrawdownmodel.h \
@@ -22,7 +23,8 @@ HEADERS += \
     theis.h \
     io.h \
     specialfunctions.h \
-    testing.h
+    testing.h \
+    utility.h
 
 LIBS += -lgfortran
 

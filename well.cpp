@@ -10,6 +10,12 @@ Well::Well(std::string name, double x, double y, double rw)
     rw_ = rw;
 }
 
+void Well::setQ(Timeseries q)
+{
+    q_ = q;
+    dQ_ = q_.deltaValues();
+}
+
 double Well::distanceTo(double x, double y)
 {
     double dx = x - x_;

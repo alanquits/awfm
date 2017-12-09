@@ -15,6 +15,7 @@ class Well
 
     Timeseries wl_; // observed water levels
     Timeseries q_;  // observed pumping
+    Timeseries dQ_;
 public:
     Well(std::string name, double x, double y, double rw);
 
@@ -22,9 +23,12 @@ public:
     double x() { return x_; }
     double y() { return y_; }
     double rw() { return rw_; }
-
     Timeseries wl() { return wl_; }
     Timeseries q() { return q_; }
+    Timeseries dQ() { return dQ_; }
+
+    void setWl(Timeseries wl) { wl_ = wl; }
+    void setQ(Timeseries q);
 
     double distanceTo(double x, double y);
     double distanceTo(Well &w);

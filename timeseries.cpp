@@ -97,7 +97,12 @@ void Timeseries::consolidateZeros()
 Timeseries Timeseries::deltaValues()
 {
     Timeseries ts;
-    if (size() == 0 || size() == 1) {
+    if (size() == 0) {
+        return ts;
+    }
+
+    if (size() == 1) {
+        ts.append(t(0), v(0));
         return ts;
     }
 
@@ -108,6 +113,22 @@ Timeseries Timeseries::deltaValues()
     }
 
     return ts;
+}
+
+bool Timeseries::isEqual(Timeseries &ts, double tol)
+{
+    if (size() == ts.size()) {
+        for (size_t i = 0; i < size(); i++) {
+            bool t_equal = Utility::floatCompare(t(i), ts.t(i), tol);
+            bool v_equal = Utility::floatCompare(v(i), ts.v(i), tol);
+            if (!t_equal || !v_equal) {
+                return false;
+            }
+        }
+    } else {
+        return false;
+    }
+    return true;
 }
 
 double Timeseries::linearInterpolateValueAtTime(double t)
