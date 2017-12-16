@@ -71,3 +71,9 @@ Thumbs.db
 *.dll
 *.exe
 
+CMakeLists.txt.user
+build-awfm-Desktop_Qt_5_9_2_GCC_64bit-Debug/
+build-awfm-Desktop_Qt_5_9_2_GCC_64bit-Default/
+build-awfm-Desktop_Qt_5_9_2_GCC_64bit-Release/
+build-untitled-Desktop_Qt_5_9_2_GCC_64bit-Debug/
+untitled/
