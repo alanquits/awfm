@@ -1,12 +1,22 @@
 #include <iostream>
+#include <QApplication>
 
+#include "mainwindow.h"
 #include "testing.h"
 
 using namespace std;
 
-int main()
+int main(int argc, char** argv)
 {
-    Testing tests = Testing("/home/alan/Dev/awfm/untitled/testing");
-    tests.runTests();
-    return 0;
+    QApplication app(argc, argv);
+
+    MainWindow m;
+    m.show();
+
+    app.exec();
+//    awfm::Testing tests = awfm::Testing("/home/alan/Dev/awfm/untitled/testing");
+//    tests.runTests();
+//    return 0;
+
+
 }

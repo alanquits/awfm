@@ -13,8 +13,10 @@ extern "C" {
 }
 #endif
 
-double Factorial(int n);
-double K0(double x);
-double W(double u);
+namespace awfm {
+    double Factorial(int n);
+    double K0(double x);
+    double W(double u);
+}
 
 #endif // SPECIALFUNCTIONS_H
