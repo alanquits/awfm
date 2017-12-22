@@ -75,7 +75,7 @@ namespace awfm {
 
     bool Testing::testTheis01()
     {
-        Well w = Well("Well-A", 824, 0, 1.0);
+        Well w = Well("Well-A", 824, 0, 1.0, 1000);
         Theis model = Theis(2.4e-5, 1400.0);
         Timeseries ts_Q = Timeseries();
         ts_Q.append(0.0, 42350.0);

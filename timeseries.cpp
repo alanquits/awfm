@@ -38,6 +38,24 @@ namespace awfm {
         writeTimeseriesToFile(this, file_path);
     }
 
+    std::vector<double> Timeseries::ts()
+    {
+        std::vector<double> ts;
+        for (int i = 0; i < size(); i++) {
+            ts.push_back(t(i));
+        }
+        return ts;
+    }
+
+    std::vector<double> Timeseries::vs()
+    {
+        std::vector<double> vs;
+        for (int i = 0; i < size(); i++) {
+            vs.push_back(v(i));
+        }
+        return vs;
+    }
+
     void Timeseries::absolute()
     {
         for (size_t i = 0; i < data_.size(); i++) {

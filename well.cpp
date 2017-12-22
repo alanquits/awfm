@@ -3,12 +3,13 @@
 #include <cmath>
 
 namespace awfm {
-    Well::Well(std::string name, double x, double y, double rw)
+    Well::Well(std::string name, double x, double y, double rw, double h0)
     {
         name_ = name;
         x_ = x;
         y_ = y;
         rw_ = rw;
+        h0_ = h0;
     }
 
     void Well::setQ(Timeseries q)

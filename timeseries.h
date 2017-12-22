@@ -29,6 +29,8 @@ namespace awfm {
 
         std::vector<Measure> data() { return data_; }
         double t(int idx) { return data_[idx].t(); }
+        std::vector<double> ts();
+        std::vector<double> vs();
         double v(int idx) { return data_[idx].v(); }
         double errorCode() { return errorCode_; }
         Measure at(int idx) { return data_[idx]; }
