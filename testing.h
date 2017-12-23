@@ -1,6 +1,7 @@
 #ifndef TESTING_H
 #define TESTING_H
 
+#include "dbio.h"
 #include <string>
 
 namespace awfm {
@@ -17,6 +18,7 @@ namespace awfm {
 
         bool stdTest(bool comparison, std::string message);
 
+        bool createDatabase();
         bool testWellFunction();
         bool timeseriesTest01();
         bool timeseriesTest02();

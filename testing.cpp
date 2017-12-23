@@ -21,6 +21,7 @@ namespace awfm {
         if (!timeseriesTest01()) { return ; }
         if (!timeseriesTest02()) { return ; }
         if (!testTheis01()) { return ; }
+        if (!createDatabase()) { return ; }
     }
 
     bool Testing::stdTest(bool comparison, std::string message)
@@ -32,6 +33,26 @@ namespace awfm {
             std::cout << "FAILED: " << message << "\n";
             return false;
         }
+    }
+
+    bool Testing::createDatabase()
+    {
+        bool ok;
+        DBIO dbio = DBIO();
+
+        dbio.open(testDir_ + "/testdatabase.db", &ok);
+        if (!ok) {
+            return stdTest(false, "Open test database");
+        }
+
+        dbio.createBlank(&ok);
+        if (!ok) {
+            return stdTest(false, "Create test database");
+        }
+
+        dbio.close();
+        return stdTest(true, "Opening and creating test database");
+
     }
 
     bool Testing::testWellFunction()

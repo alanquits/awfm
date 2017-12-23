@@ -24,11 +24,6 @@ namespace awfm {
     void run();
     void runAtWell(size_t idx);
     };
-
-    void Model::setTemporalDomain(TemporalDomain td)
-    {
-        temporalDomain_ = td;
-    }
 }
 
 #endif //MODEL_H

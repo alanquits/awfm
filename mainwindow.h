@@ -60,6 +60,7 @@ class MainWindow : public QMainWindow
 
 public slots:
     void newFile();
+    void editWells();
     void dummySlot();
 
 public:

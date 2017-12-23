@@ -56,6 +56,7 @@
 #include <QtWidgets/QMessageBox>
 
 #include "mainwindow.h"
+#include "editwellsdlg.h"
 
 // ![0]
 
@@ -65,8 +66,8 @@ MainWindow::MainWindow()
     createActions();
     createMenus();
 
-    setWindowTitle(tr("Simple Text Viewer"));
-    resize(750, 400);
+    setWindowTitle(tr("Analytic Well Field Modeler"));
+    showMaximized();
 }
 //! [1]
 
@@ -95,7 +96,7 @@ void MainWindow::createActions()
     connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 
     wellsAct = new QAction(tr("Edit &Wells"), this);
-    connect(wellsAct, &QAction::triggered, this, &MainWindow::dummySlot);
+    connect(wellsAct, &QAction::triggered, this, &MainWindow::editWells);
 
     pumpingRatesAct = new QAction(tr("Edit &Pumping Rates"), this);
     connect(pumpingRatesAct, &QAction::triggered, this, &MainWindow::dummySlot);
@@ -154,6 +155,12 @@ void MainWindow::createMenus()
 void MainWindow::newFile()
 {
     return;
+}
+
+void MainWindow::editWells()
+{
+    EditWellsDlg dlg;
+    dlg.exec();
 }
 
 void MainWindow::dummySlot()

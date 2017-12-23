@@ -1,4 +1,3 @@
--- Be careful manipulating database directly. The API will enforce many constraints...
 create table meta (
     file_version_major int
   , file_version_minor int
@@ -6,7 +5,7 @@ create table meta (
   , last_updated timestamp
   , results_are_dirty_before timestamp
 );
-insert into meta (file_version_major, file_version_minor, created_on, last_updated, results_directory_is_relative)
+insert into meta (file_version_major, file_version_minor, created_on, last_updated, results_are_dirty_before)
   values (0, 1, datetime('now'), datetime('now'), datetime('now'));
 
 create table fk_unit_types (
@@ -51,14 +50,12 @@ create table fk_well_loss_models (
   well_loss_model text primary key
 );
 insert into fk_well_loss_models values ('jacob');
-insert into fk_well_loss_models values ('simplified jacob')
+insert into fk_well_loss_models values ('simplified jacob');
 
 create table fk_spatial_domain_types (
     spatial_domain_type text primary key
   , description text
 );
---insert into fk_spatial_domain_types values ('surface', 'x0, xf, xn, y0, yf, and yn are provided by user.');
---insert into fk_spatial_domain_types values ('points', 'X/Y coordinates are provided by user. Well loss is not modeled');
 insert into fk_spatial_domain_types values ('wells', 'X/Y coordinates are coincident with well locations and well-loss is modeled');
 
 create table fk_temporal_domain_types (
@@ -77,7 +74,7 @@ create table settings (
   , output_time_unit text references fk_time_units (time_unit)
   , aquifer_drawdown_model text references fk_aquifer_drawdown_models (aquifer_drawdown_model)
   , well_loss_model text references fk_well_loss_models (well_loss_model)
-  , results_directory textjacob
+  , results_directory text
   , results_directory_is_relative boolean
 );
 
@@ -99,7 +96,7 @@ insert into aquifer_drawdown_model_parameters values ('theis', 'S', 'storativity
 insert into aquifer_drawdown_model_parameters values ('theis', 'T', 'transmissivity', NULL);
 insert into aquifer_drawdown_model_parameters values ('hantush-jacob', 'S', 'storativity', NULL);
 insert into aquifer_drawdown_model_parameters values ('hantush-jacob', 'T', 'transmissivity', NULL);
-insert into aquifer_drawdown_model_parameters values ('hantush-jacob', 'm\'/K\'', 'aquitard thickness/vertical conductivity', NULL);
+insert into aquifer_drawdown_model_parameters values ('hantush-jacob', 'm*/K*', 'aquitard thickness/vertical conductivity', NULL);
 
 create table well_loss_model_parameters (
     well_loss_model references fk_well_loss_models (well_loss_model)

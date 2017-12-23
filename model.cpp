@@ -13,6 +13,11 @@ namespace awfm {
         aquiferDrawdownModel_ = m;
     }
 
+    void Model::setTemporalDomain(TemporalDomain td)
+    {
+        temporalDomain_ = td;
+    }
+
     void Model::setWellLossModel(AbstractWellLossModel *m)
     {
         wellLossModel_ = m;

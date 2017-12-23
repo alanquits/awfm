@@ -14,7 +14,9 @@ int main(int argc, char** argv)
     m.show();
 
     app.exec();
-//    awfm::Testing tests = awfm::Testing("/home/alan/Dev/awfm/untitled/testing");
+
+
+//    awfm::Testing tests = awfm::Testing("/home/alan/Dev/awfm/awfm/testing");
 //    tests.runTests();
 //    return 0;
 
