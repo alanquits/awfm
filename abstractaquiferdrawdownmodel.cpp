@@ -7,7 +7,7 @@ namespace awfm {
 
     }
 
-    double AbstractAquiferDrawdownModel::drawdown(std::vector<Well> &wells,
+    double AbstractAquiferDrawdownModel::drawdown(QList<Well> &wells,
                                                   double x, double y, double t)
     {
         double s = 0;

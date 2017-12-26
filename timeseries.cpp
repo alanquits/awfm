@@ -27,29 +27,29 @@ namespace awfm {
         data_.push_back(m);
     }
 
-    void Timeseries::readFromFile(std::string file_path)
+    void Timeseries::readFromFile(QString file_path)
     {
         Timeseries ts = readTimeseriesFromFile(file_path);
         data_ = ts.data();
     }
 
-    void Timeseries::writeToFile(std::string file_path)
+    void Timeseries::writeToFile(QString file_path)
     {
         writeTimeseriesToFile(this, file_path);
     }
 
-    std::vector<double> Timeseries::ts()
+    QList<double> Timeseries::ts()
     {
-        std::vector<double> ts;
+        QList<double> ts;
         for (int i = 0; i < size(); i++) {
             ts.push_back(t(i));
         }
         return ts;
     }
 
-    std::vector<double> Timeseries::vs()
+    QList<double> Timeseries::vs()
     {
-        std::vector<double> vs;
+        QList<double> vs;
         for (int i = 0; i < size(); i++) {
             vs.push_back(v(i));
         }
@@ -69,9 +69,9 @@ namespace awfm {
             return;
         }
 
-        std::vector<Measure> data_new;
-        std::vector<int> idxs;
-        std::vector<int> signs;
+        QList<Measure> data_new;
+        QList<int> idxs;
+        QList<int> signs;
         signChanges(&idxs, &signs);
 
         for (size_t i = 1; i < idxs.size(); i++) {
@@ -98,7 +98,7 @@ namespace awfm {
             return;
         }
 
-        std::vector<Measure> data_new;
+        QList<Measure> data_new;
         data_new.push_back(data_[0]);
         bool reading_zeros = data_[0].v() == 0;
 
@@ -190,7 +190,7 @@ namespace awfm {
         }
     }
 
-    void Timeseries::signChanges(std::vector<int> *idxs, std::vector<int> *signs)
+    void Timeseries::signChanges(QList<int> *idxs, QList<int> *signs)
     {
         idxs->clear();
         signs->clear();

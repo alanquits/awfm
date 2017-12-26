@@ -1,14 +1,15 @@
 #ifndef WELL_H
 #define WELL_H
 
-#include <string>
+#include <QString>
 
+#include "abstractwelllossmodel.h"
 #include "timeseries.h"
 
 namespace awfm {
     class Well
     {
-        std::string name_; // name (must be unique)
+        QString name_; // name (must be unique)
         double x_;  // c coordinate
         double y_;  // y coordinate
         double rw_; // well radius
@@ -19,10 +20,12 @@ namespace awfm {
         Timeseries dQ_;    // delta pumping (used by aquifer drawdown models)
         Timeseries sAq_;   // modeled aquifer drawdown
         Timeseries sLoss_; // modeled well loss
-    public:
-        Well(std::string name, double x, double y, double rw, double h0);
 
-        std::string name() { return name_; }
+        AbstractWellLossModel* wellLossModel_;
+    public:
+        Well(QString name, double x, double y, double rw, double h0);
+
+        QString name() { return name_; }
         double x() { return x_; }
         double y() { return y_; }
         double rw() { return rw_; }
@@ -38,6 +41,7 @@ namespace awfm {
         void setQ(Timeseries q);
         void setSAq(Timeseries sAq) { sAq_ = sAq; }
         void setSLoss(Timeseries sLoss) { sLoss_ = sLoss; }
+        void setWellLossModel(AbstractWellLossModel *m);
 
         double distanceTo(double x, double y);
         double distanceTo(Well &w);

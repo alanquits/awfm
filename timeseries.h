@@ -2,8 +2,8 @@
 #define TIMESERIES_H
 
 #include <cstdlib>
-#include <string>
-#include <vector>
+#include <QString>
+#include <QList>
 #include "measure.h"
 #include "utility.h"
 
@@ -11,7 +11,7 @@ namespace awfm {
     class Timeseries
     {
     private:
-        std::vector<Measure> data_;
+        QList<Measure> data_;
         double errorCode_;
     public:
         Timeseries();
@@ -20,17 +20,17 @@ namespace awfm {
         void append(double t);
         void append(Measure m);
 
-        void readFromFile(std::string file_path);
-        void writeToFile(std::string file_path);
+        void readFromFile(QString file_path);
+        void writeToFile(QString file_path);
 
         void setErrorCode(double errorCode);
         void setT(int idx, double t);
         void setV(int idx, double v);
 
-        std::vector<Measure> data() { return data_; }
+        QList<Measure> data() { return data_; }
         double t(int idx) { return data_[idx].t(); }
-        std::vector<double> ts();
-        std::vector<double> vs();
+        QList<double> ts();
+        QList<double> vs();
         double v(int idx) { return data_[idx].v(); }
         double errorCode() { return errorCode_; }
         Measure at(int idx) { return data_[idx]; }
@@ -50,7 +50,7 @@ namespace awfm {
         void projectOntoLine(double tmin, double tmax, double dt);
         void scale(double s);
         int sign(int idx);
-        void signChanges(std::vector<int> *idxs, std::vector<int> *signs);
+        void signChanges(QList<int> *idxs, QList<int> *signs);
         Timeseries slice(size_t start_idx, size_t end_idx);
         Timeseries sliceByTime(double tmin, double tmax);
         double valueMean();

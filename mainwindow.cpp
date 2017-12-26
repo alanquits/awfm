@@ -65,6 +65,7 @@ MainWindow::MainWindow()
 {
     createActions();
     createMenus();
+    setDirty(false);
 
     setWindowTitle(tr("Analytic Well Field Modeler"));
     showMaximized();
@@ -152,9 +153,27 @@ void MainWindow::createMenus()
     menuBar()->addMenu(pestMenu);
 }
 
+void MainWindow::setDirty(bool dirty)
+{
+    isDirty_ = dirty;
+    saveAct->setEnabled(dirty);
+    saveAsAct->setEnabled(dirty);
+}
+
 void MainWindow::newFile()
 {
-    return;
+    if (isDirty_) {
+        int ret = QMessageBox::warning(this, tr("AWFM"),
+            tr("The document has been modified.\n"
+               "Do you want to save your changes?"),
+               QMessageBox::Save | QMessageBox::Discard
+               | QMessageBox::Cancel,
+               QMessageBox::Save);
+        //TODO
+    } else {
+        model_ = awfm::Model();
+        setDirty(true);
+    }
 }
 
 void MainWindow::editWells()

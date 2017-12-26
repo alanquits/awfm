@@ -1,8 +1,7 @@
 #ifndef ABSTRACTWELLLOSSMODEL_H
 #define ABSTRACTWELLLOSSMODEL_H
 
-#include <vector>
-#include "well.h"
+#include <QList>
 
 namespace awfm {
 
@@ -17,9 +16,8 @@ namespace awfm {
         WellLossModel modelType_;
 
     public:
-        AbstractWellLossModel();
-
-        virtual double drawdown(Well &well, double t)=0;
+        WellLossModel modelType() { return modelType_; }
+        virtual double drawdown(double Q)=0;
     };
 
 }

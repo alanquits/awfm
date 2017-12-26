@@ -11,7 +11,7 @@ namespace awfm {
 
     public:
         JacobWellLoss(double B, double C);
-        virtual double drawdown(Well &w, double t);
+        virtual double drawdown(double Q);
     };
 }
 

@@ -2,6 +2,8 @@
 #define UTILITY_H
 
 #include <cmath>
+#include <QString>
+#include <QList>
 #include "definitions.h"
 
 namespace awfm {
@@ -15,6 +17,9 @@ namespace awfm {
         static double conversionFactor(DischargeUnit u1, DischargeUnit u2);
         static double conversionFactor(TimeUnit u);
         static double conversionFactor(TimeUnit u1, TimeUnit u2);
+        static bool caseInsensitiveStringCompare(QString s1, QString s2);
+        static QString intercalateString(QStringList strings, QString separator);
+
     };
 }
 

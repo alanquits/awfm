@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <QDebug>
 
 #include "specialfunctions.h"
 #include "theis.h"
@@ -10,7 +11,7 @@
 
 namespace awfm {
 
-    Testing::Testing(std::string testDir)
+    Testing::Testing(QString testDir)
     {
         testDir_ = testDir;
     }
@@ -24,13 +25,13 @@ namespace awfm {
         if (!createDatabase()) { return ; }
     }
 
-    bool Testing::stdTest(bool comparison, std::string message)
+    bool Testing::stdTest(bool comparison, QString message)
     {
         if (comparison) {
-            std::cout << "PASSED: " << message << "\n";
+            qDebug() << "PASSED: " << message << "\n";
             return true;
         } else {
-            std::cout << "FAILED: " << message << "\n";
+            qDebug() << "FAILED: " << message << "\n";
             return false;
         }
     }

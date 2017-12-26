@@ -2,21 +2,21 @@
 #define TESTING_H
 
 #include "dbio.h"
-#include <string>
+#include <QString>
 
 namespace awfm {
     class Testing
     {
     private:
-        std::string testDir_;
+        QString testDir_;
 
     public:
-        Testing(std::string testDir);
+        Testing(QString testDir);
 
         void runTests();
 
 
-        bool stdTest(bool comparison, std::string message);
+        bool stdTest(bool comparison, QString message);
 
         bool createDatabase();
         bool testWellFunction();

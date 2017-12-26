@@ -52,7 +52,7 @@
 #define MAINWINDOW_H
 
 #include <QtWidgets/QMainWindow>
-
+#include "model.h"
 
 class MainWindow : public QMainWindow
 {
@@ -70,6 +70,10 @@ public:
 private:
     void createActions();
     void createMenus();
+    void setDirty(bool);
+
+    bool isDirty_;
+    awfm::Model model_;
 
     QMenu *fileMenu;
     QMenu *modelMenu;

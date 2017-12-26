@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "utility.h"
 
 namespace awfm {
@@ -47,5 +48,26 @@ namespace awfm {
     double Utility::conversionFactor(TimeUnit u1, TimeUnit u2)
     {
         return conversionFactor(u1) * (1/conversionFactor(u2));
+    }
+
+    bool Utility::caseInsensitiveStringCompare(QString s1, QString s2)
+    {
+        return s1.toLower() == s2.toLower();
+    }
+
+    QString Utility::intercalateString(QStringList strings, QString separator)
+    {
+        QString s_out;
+        bool first = true;
+        for (int i = 0; i < strings.size(); i++) {
+            if (first) {
+                first = false;
+            } else {
+                s_out += separator;
+            }
+            s_out += strings[i];
+        }
+
+        return s_out;
     }
 }

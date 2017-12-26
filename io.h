@@ -3,14 +3,14 @@
 
 #include <iostream>
 #include <fstream>
-#include <string>
+#include <QString>
 
 #include "timeseries.h"
 #include "model.h"
 
 namespace awfm {
-    Timeseries readTimeseriesFromFile(std::string file_path);
-    void writeTimeseriesToFile(Timeseries *ts, std::string file_path);
+    Timeseries readTimeseriesFromFile(QString file_path);
+    void writeTimeseriesToFile(Timeseries *ts, QString file_path);
 
 }
 

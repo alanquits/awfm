@@ -5,6 +5,7 @@ namespace awfm {
     typedef enum { FEET, METERS, YARDS } LengthUnit;
     typedef enum { GPM, CFS, M3D } DischargeUnit;
     typedef enum { DAYS, HOURS, MINUTES, SECONDS } TimeUnit;
+    typedef enum { XLSOURCE, SQLITESOURCE, CSVSOURCE } SourceFileType;
 
     // Length multipliers (conversions to meters)
     const double METERS_TO_STD = 1;

@@ -1,44 +1,51 @@
+#include <QDebug>
+#include <QIODevice>
+#include <QTextStream>
 #include "io.h"
 
 namespace awfm {
 
-    Timeseries readTimeseriesFromFile(std::string file_path)
+    Timeseries readTimeseriesFromFile(QString file_path)
     {
         Timeseries ts;
-        std::ifstream fs(file_path);
 
-        if (fs.is_open()) {
-            size_t size;
-            fs >> size;
-            for (size_t i = 0; i < size; i++) {
-                double t, v;
-                fs >> t >> v;
-                ts.append(t, v);
-            }
+        QFile file(file_path);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+            return ts;
 
-            fs.close();
-        } else {
-            std::cout << "Unable to open file " << file_path
-                      << " for reading ";
+        QTextStream in(&file);
+
+        size_t size;
+        in >> size;
+
+        while (!in.atEnd()) {
+            double t, v;
+            in >> t >> v;
+            ts.append(t, v);
         }
 
+        file.close();
         return ts;
     }
 
-    void writeTimeseriesToFile(Timeseries *ts, std::string file_path)
+    void writeTimeseriesToFile(Timeseries *ts, QString file_path)
     {
-        std::ofstream fs(file_path);
-        if (fs.is_open()) {
-            fs << ts->size() << "\n";
-            for (size_t i = 0; i < ts->size(); i++) {
-                Measure m = ts->at(i);
-                fs << m.t() << " " << m.v() << "\n";
-            }
-            fs.close();
-        } else {
-            std::cout << "Unable to open file " << file_path
+        QFile file(file_path);
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            qDebug() << "Unable to open file " << file_path
                       << " for writing ";
+            return;
         }
+
+        QTextStream out(&file);
+
+        out << ts->size() << "\n";
+        for (size_t i = 0; i < ts->size(); i++) {
+            Measure m = ts->at(i);
+            out << m.t() << " " << m.v() << "\n";
+        }
+
+        file.close();
         return;
     }
 }

@@ -1,3 +1,4 @@
+#include <cmath>
 #include "jacobwellloss.h"
 
 namespace awfm {
@@ -8,9 +9,9 @@ namespace awfm {
         C_ = C;
     }
 
-    double JacobWellLoss::drawdown(Well &w, double t)
+    double JacobWellLoss::drawdown(double Q)
     {
-        return 0;
+        C_*pow(Q,2) + B_*Q;
     }
 }
 

@@ -1,15 +1,27 @@
 #include "model.h"
 
+#include "jacobwellloss.h"
+#include "jacobsimplifiedwellloss.h"
+#include "theis.h"
 #include "temporaldomain.h"
 
 namespace awfm {
     Model::Model()
     {
+        aquiferDrawdownModel_ = NULL;
+        setAquiferDrawdownModel(new Theis(1e-4, 200));
         temporalDomain_ = TemporalDomain();
+        lengthUnit_ = METERS;
+        timeUnit_ = DAYS;
+        dischargeUnit_ = M3D;
     }
 
     void Model::setAquiferDrawdownModel(AbstractAquiferDrawdownModel *m)
     {
+        if (aquiferDrawdownModel_) {
+            delete aquiferDrawdownModel_;
+            aquiferDrawdownModel_ = NULL;
+        }
         aquiferDrawdownModel_ = m;
     }
 
@@ -18,12 +30,7 @@ namespace awfm {
         temporalDomain_ = td;
     }
 
-    void Model::setWellLossModel(AbstractWellLossModel *m)
-    {
-        wellLossModel_ = m;
-    }
-
-    void Model::setWells(std::vector<Well> wells)
+    void Model::setWells(QList<Well> wells)
     {
         wells_ = wells;
     }
@@ -41,7 +48,7 @@ namespace awfm {
         Timeseries sLoss;
         double x = wells_[idx].x();
         double y = wells_[idx].y();
-        std::vector<double> ts_at_well;
+        QList<double> ts_at_well;
         ts_at_well = temporalDomain_.domainType() == TEMPORALDOMAIN_ATWELLS
                     ? wells_[idx].wl().ts()
                     : temporalDomain_.ts();
@@ -50,8 +57,8 @@ namespace awfm {
             double t = ts_at_well[i];
             double s_aq = aquiferDrawdownModel_->drawdown(wells_, x, y, t);
             sAq.append(t, s_aq);
-            double s_wl = wellLossModel_->drawdown(wells_[idx], t);
-            sLoss.append(t, s_wl);
+//            double s_wl = wellLossModel_->drawdown(wells_[idx], t);
+//            sLoss.append(t, s_wl);
         }
 
         wells_[idx].setSAq(sAq);

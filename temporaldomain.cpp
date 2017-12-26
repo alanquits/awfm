@@ -12,7 +12,7 @@ namespace awfm {
         domainType_ = TEMPORALDOMAIN_ATWELLS;
     }
 
-    void TemporalDomain::setArbitrary(std::vector<double> ts)
+    void TemporalDomain::setArbitrary(QList<double> ts)
     {
         domainType_ = TEMPORALDOMAIN_ARBITRARY;
         ts_ = ts;
@@ -30,7 +30,7 @@ namespace awfm {
         }
     }
 
-    std::vector<double> TemporalDomain::ts(Well &w)
+    QList<double> TemporalDomain::ts(Well &w)
     {
         return w.wl().ts();
     }

@@ -1,11 +1,12 @@
 #include <fstream>
 #include <iostream>
+#include <QTextStream>
 #include "dbio.h"
 
 namespace awfm {
-    void DBIO::open(std::string db_path, bool *ok)
+    void DBIO::open(QString db_path, bool *ok)
     {
-        int rc = sqlite3_open(db_path.c_str(), &db_);
+        int rc = sqlite3_open(db_path.toLatin1().data(), &db_);
         if (rc != SQLITE_OK) {
             //fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
             sqlite3_close(db_);
@@ -14,9 +15,31 @@ namespace awfm {
         *ok = true;
     }
 
-    std::vector<Well> DBIO::getWells(bool *ok)
+    QStringList DBIO::tables(bool *ok)
     {
-        std::vector<Well> wells;
+        QStringList tables;
+        sqlite3_stmt* stmt;
+        const char *sql = "SELECT name FROM sqlite_master where type='table'";
+        int rc = sqlite3_prepare_v2(db_, sql, -1, &stmt, NULL);
+        if (rc == SQLITE_OK) {
+            char *table_name;
+            QString table_name_qstr;
+            while(sqlite3_step(stmt) == SQLITE_ROW) {
+                tables.append(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0)));
+            }
+            *ok = true;
+        } else {
+            *ok = false;
+        }
+
+        sqlite3_finalize(stmt);
+
+        return tables;
+    }
+
+    QList<Well> DBIO::getWells(bool *ok)
+    {
+        QList<Well> wells;
         sqlite3_stmt *res;
         const char *sql = "select name, x, y, rw, h0 from wells";
 
@@ -24,7 +47,7 @@ namespace awfm {
         if (rc == SQLITE_OK) {
             *ok = true;
             while (sqlite3_step(res) == SQLITE_ROW) {
-                std::string name = reinterpret_cast<const char*>(sqlite3_column_text(res, 0));
+                QString name = reinterpret_cast<const char*>(sqlite3_column_text(res, 0));
                 double x = sqlite3_column_double(res, 1);
                 double y = sqlite3_column_double(res, 2);
                 double rw = sqlite3_column_double(res, 3);
@@ -41,10 +64,10 @@ namespace awfm {
         return wells;
     }
 
-    void DBIO::readPumpingRatesIntoWells(std::vector<Well> &ws)
+    void DBIO::readPumpingRatesIntoWells(QList<Well> &ws)
     {
         for (int i = 0; i < ws.size(); i++) {
-            std::string name = ws[i].name();
+            QString name = ws[i].name();
             // TODO
         }
     }
@@ -56,16 +79,18 @@ namespace awfm {
 
     void DBIO::createBlank(bool *ok)
     {
-        std::string infile = "/home/alan/Dev/awfm/awfm/resources/create_db.sql";
-        std::ifstream t(infile);
-        t.seekg(0, std::ios::end);
-        size_t size = t.tellg();
-        std::string sql(size, ' ');
-        t.seekg(0);
-        t.read(&sql[0], size);
+        QString infile = "/home/alan/Dev/awfm/awfm/resources/create_db.sql";
+        QFile f(infile);
+        if (!f.open(QFile::ReadOnly | QFile::Text)) {
+            *ok = false;
+            return;
+        }
+
+        QTextStream in(&f);
+        QString sql = in.readAll();
 
         char *err_msg;
-        int rc = sqlite3_exec(db_, sql.c_str(), 0, 0, &err_msg);
+        int rc = sqlite3_exec(db_, sql.toLatin1().data(), 0, 0, &err_msg);
 
         if (rc != SQLITE_OK ) {
             fprintf(stderr, "SQL error: %s\n", err_msg);
