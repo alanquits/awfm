@@ -60,19 +60,23 @@ class MainWindow : public QMainWindow
 
 public slots:
     void newFile();
+    void editAquiferDrawdownMethod();
     void editWells();
+    void editPumpingRates();
     void dummySlot();
 
 public:
     MainWindow();
-
+    ~MainWindow();
 
 private:
     void createActions();
     void createMenus();
     void setDirty(bool);
+    void setModelLoaded(bool);
 
     bool isDirty_;
+    bool modelLoaded_;
     awfm::Model model_;
 
     QMenu *fileMenu;

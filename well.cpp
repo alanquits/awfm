@@ -15,6 +15,31 @@ namespace awfm {
         wellLossModel_ = new JacobSimplifiedWellLoss(0);
     }
 
+    void Well::setName(QString name)
+    {
+        name_ = name;
+    }
+
+    void Well::setX(double x)
+    {
+        x_ = x;
+    }
+
+    void Well::setY(double y)
+    {
+        y_ = y;
+    }
+
+    void Well::setRw(double rw)
+    {
+        rw_ = rw;
+    }
+
+    void Well::setH0(double h0)
+    {
+        h0_ = h0;
+    }
+
     void Well::setQ(Timeseries q)
     {
         q_ = q;

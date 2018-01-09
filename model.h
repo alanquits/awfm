@@ -21,9 +21,13 @@ namespace awfm {
 
     public:
     Model();
+    AbstractAquiferDrawdownModel *aquiferDrawdownModel() { return aquiferDrawdownModel_; }
+
     void setAquiferDrawdownModel(AbstractAquiferDrawdownModel*);
     void setWells(QList<Well> wells);
     void setTemporalDomain(TemporalDomain td);
+
+    QList<Well> wells() { return wells_; }
 
     void run();
     void runAtWell(size_t idx);

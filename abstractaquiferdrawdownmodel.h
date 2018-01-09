@@ -19,6 +19,8 @@ namespace awfm {
     public:
         AbstractAquiferDrawdownModel();
 
+        virtual AquiferDrawdownModel modelType()=0;
+
         double drawdown(QList<Well> &wells, double x, double y, double t);
         virtual double drawdownAtWell(Well &well, double x, double y, double t)=0;
 

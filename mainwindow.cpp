@@ -56,7 +56,10 @@
 #include <QtWidgets/QMessageBox>
 
 #include "mainwindow.h"
+#include "aquiferdrawdowndlg.h"
 #include "editwellsdlg.h"
+#include "pumpingratesdlg.h"
+#include "theis.h"
 
 // ![0]
 
@@ -66,9 +69,14 @@ MainWindow::MainWindow()
     createActions();
     createMenus();
     setDirty(false);
+    setModelLoaded(false);
 
     setWindowTitle(tr("Analytic Well Field Modeler"));
     showMaximized();
+}
+
+MainWindow::~MainWindow()
+{
 }
 //! [1]
 
@@ -100,10 +108,10 @@ void MainWindow::createActions()
     connect(wellsAct, &QAction::triggered, this, &MainWindow::editWells);
 
     pumpingRatesAct = new QAction(tr("Edit &Pumping Rates"), this);
-    connect(pumpingRatesAct, &QAction::triggered, this, &MainWindow::dummySlot);
+    connect(pumpingRatesAct, &QAction::triggered, this, &MainWindow::editPumpingRates);
 
     aquiferDrawdownAct = new QAction(tr("&Aquifer Drawdown"), this);
-    connect(aquiferDrawdownAct, &QAction::triggered, this, &MainWindow::dummySlot);
+    connect(aquiferDrawdownAct, &QAction::triggered, this, &MainWindow::editAquiferDrawdownMethod);
 
     wellLossAct = new QAction(tr("Well &Loss"), this);
     connect(wellLossAct, &QAction::triggered, this, &MainWindow::dummySlot);
@@ -160,6 +168,13 @@ void MainWindow::setDirty(bool dirty)
     saveAsAct->setEnabled(dirty);
 }
 
+void MainWindow::setModelLoaded(bool loaded)
+{
+    modelMenu->setEnabled(loaded);
+    pestMenu->setEnabled(loaded);
+    modelLoaded_ = loaded;
+}
+
 void MainWindow::newFile()
 {
     if (isDirty_) {
@@ -173,13 +188,42 @@ void MainWindow::newFile()
     } else {
         model_ = awfm::Model();
         setDirty(true);
+        setModelLoaded(true);
+    }
+}
+
+void MainWindow::editAquiferDrawdownMethod()
+{
+    AquiferDrawdownDlg dlg(&model_);
+    if (dlg.exec()) {
+        awfm::AquiferDrawdownModel model_type = dlg.aquiferDrawdownModel();
+        if (model_type == awfm::THEIS) {
+            double S = dlg.storativity();
+            double T = dlg.transmissivity();
+            model_.setAquiferDrawdownModel(new awfm::Theis(S, T));
+        } else if (model_type == awfm::HANTUSHJACOB) {
+            double S = dlg.storativity();
+            double T = dlg.transmissivity();
+            double mpOverKp = dlg.mpOverKp();
+            //model_.setAquiferDrawdownModel(awfm::HantushJacob(S, T, mpOverKp); // TODO
+        }
     }
 }
 
 void MainWindow::editWells()
 {
-    EditWellsDlg dlg;
-    dlg.exec();
+    EditWellsDlg dlg(&model_);
+    if (dlg.exec()) {
+        model_.setWells(dlg.wells());
+    }
+}
+
+void MainWindow::editPumpingRates()
+{
+    PumpingRatesDlg dlg(&model_);
+    if (dlg.exec()) {
+        //TODO
+    }
 }
 
 void MainWindow::dummySlot()

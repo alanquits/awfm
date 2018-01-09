@@ -18,10 +18,14 @@ public:
 
 public slots:
     void showContextMenu(const QPoint &p);
+    void showVerticalHeaderContextmenu(const QPoint &p);
 
 signals:
     void importSelected();
     void exportSelected();
+    void insertAboveSelected(QList<int>);
+    void insertBelowSelected(QList<int>);
+    void deleteRowsSelected(QList<int>);
 
 };
 

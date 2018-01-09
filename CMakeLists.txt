@@ -7,6 +7,7 @@ set(CMAKE_AUTOMOC ON)
 find_package(Qt5Widgets)
 
 set(NAME_SOURCES testing.cpp
+    aquiferdrawdowndlg.cpp
     awfmtablewidget.cpp
     sqlitedataframe.cpp
     main.cpp
@@ -16,6 +17,7 @@ set(NAME_SOURCES testing.cpp
     io.cpp
     well.cpp
     timeseries.cpp
+    pumpingratesdlg.cpp
     specialfunctions.cpp
     abstractdataframe.cpp
     abstractaquiferdrawdownmodel.cpp
@@ -29,9 +31,11 @@ set(NAME_SOURCES testing.cpp
     utility.cpp
     slatec.f
     temporaldomain.cpp
+    timeseriesplotwidget.cpp
 )
 
 set(NAME_HEADERS measure.h
+    aquiferdrawdowndlg.h
     specialfunctions.h
     io.h
     sqlitedataframe.h
@@ -46,6 +50,7 @@ set(NAME_HEADERS measure.h
     jacobwellloss.h
     jacobsimplifiedwellloss.h
     model.h
+    pumpingratesdlg.h
     utility.h
     theis.h
     well.h
@@ -53,6 +58,7 @@ set(NAME_HEADERS measure.h
     timeseries.h
     mainwindow.h
     temporaldomain.h
+    timeseriesplotwidget.h
 )
 
 add_subdirectory("libs/sqlite3")

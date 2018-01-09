@@ -5,6 +5,7 @@
 #include "theis.h"
 #include "temporaldomain.h"
 
+
 namespace awfm {
     Model::Model()
     {
@@ -14,6 +15,7 @@ namespace awfm {
         lengthUnit_ = METERS;
         timeUnit_ = DAYS;
         dischargeUnit_ = M3D;
+        wells_.push_back(awfm::Well("Well 1", 0, 0, 1, 0));
     }
 
     void Model::setAquiferDrawdownModel(AbstractAquiferDrawdownModel *m)

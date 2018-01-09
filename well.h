@@ -36,7 +36,11 @@ namespace awfm {
         Timeseries sAq() { return sAq_; }
         Timeseries sLoss() { return sLoss_; }
 
-
+        void setName(QString name);
+        void setX(double x);
+        void setY(double y);
+        void setRw(double rw);
+        void setH0(double h0);
         void setWl(Timeseries wl) { wl_ = wl; }
         void setQ(Timeseries q);
         void setSAq(Timeseries sAq) { sAq_ = sAq; }

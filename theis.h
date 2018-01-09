@@ -16,8 +16,11 @@ namespace awfm {
 
     public:
         Theis(double S, double T);
-
+        virtual AquiferDrawdownModel modelType() { return THEIS; }
         virtual double drawdownAtWell(Well &w, double x, double y, double t);
+
+        double T() { return T_; }
+        double S() { return S_; }
     };
 }
 #endif // THEIS_H
