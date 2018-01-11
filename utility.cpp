@@ -1,4 +1,6 @@
 #include <algorithm>
+#include <QFileInfo>
+#include "abstractaquiferdrawdownmodel.h"
 #include "utility.h"
 
 namespace awfm {
@@ -69,5 +71,95 @@ namespace awfm {
         }
 
         return s_out;
+    }
+
+    QString Utility::unitAsString(LengthUnit u)
+    {
+        switch (u) {
+        case FEET: return "feet";
+        case METERS: return "meters";
+        case YARDS: return "yards";
+        }
+    }
+
+    QString Utility::unitAsString(TimeUnit u)
+    {
+        switch (u) {
+        case DAYS: return "days";
+        case HOURS: return "hours";
+        case MINUTES: return "minutes";
+        case SECONDS: return "seconds";
+        }
+    }
+
+    QString Utility::unitAsString(DischargeUnit u)
+    {
+        switch (u) {
+        case M3D: return "m3/day";
+        case CFS: return "ft3/sec";
+        case GPM: return "gal/min";
+        }
+    }
+
+    LengthUnit Utility::lengthUnitFromString(QString str)
+    {
+        if (str == "feet") {
+            return FEET;
+        } else if (str == "meters") {
+            return METERS;
+        } else if (str == "yards") {
+            return YARDS;
+        } else {
+            return METERS;
+        }
+    }
+
+    TimeUnit Utility::timeUnitFromString(QString str)
+    {
+        if (str == "days") {
+            return DAYS;
+        } else if (str == "hours") {
+            return HOURS;
+        } else if (str == "minutes") {
+            return MINUTES;
+        } else if (str == "seconds") {
+            return SECONDS;
+        } else {
+            return DAYS;
+        }
+    }
+
+    DischargeUnit Utility::dischargeUnitFromString(QString str)
+    {
+        if (str == "m3/day") {
+            return M3D;
+        } else if (str == "ft3/sec") {
+            return CFS;
+        } else if (str == "gal/min") {
+            return GPM;
+        } else {
+            return M3D;
+        }
+    }
+
+//    AquiferDrawdownModel Utility::aquiferDrawdownModelFromString(QString str)
+//    {
+//        if (str == "theis") {
+//            return THEIS;
+//        } else if (str == "hantush-jacob") {
+//            return HANTUSHJACOB;
+//        } else {
+//            return THEIS;
+//        }
+//    }
+
+    bool Utility::fileExists(QString path)
+    {
+        QFileInfo fi(path);
+        if (fi.exists() && fi.isFile()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

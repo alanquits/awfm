@@ -11,6 +11,8 @@ namespace awfm {
 
     public:
         JacobWellLoss(double B, double C);
+        virtual WellLossModel modelType() { return JACOB; }
+        virtual QString modelTypeAsString() { return "jacob"; }
         virtual double drawdown(double Q);
     };
 }

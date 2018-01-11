@@ -1,5 +1,5 @@
 #include "timeseries.h"
-#include "io.h"
+//#include "io.h"
 
 #include <cassert>
 
@@ -27,16 +27,16 @@ namespace awfm {
         data_.push_back(m);
     }
 
-    void Timeseries::readFromFile(QString file_path)
-    {
-        Timeseries ts = readTimeseriesFromFile(file_path);
-        data_ = ts.data();
-    }
+//    void Timeseries::readFromFile(QString file_path)
+//    {
+//        Timeseries ts = readTimeseriesFromFile(file_path);
+//        data_ = ts.data();
+//    }
 
-    void Timeseries::writeToFile(QString file_path)
-    {
-        writeTimeseriesToFile(this, file_path);
-    }
+//    void Timeseries::writeToFile(QString file_path)
+//    {
+//        writeTimeseriesToFile(this, file_path);
+//    }
 
     QList<double> Timeseries::ts()
     {

@@ -16,7 +16,8 @@ namespace awfm {
         WellLossModel modelType_;
 
     public:
-        WellLossModel modelType() { return modelType_; }
+        virtual WellLossModel modelType() { return modelType_; }
+        virtual QString modelTypeAsString()=0;
         virtual double drawdown(double Q)=0;
     };
 

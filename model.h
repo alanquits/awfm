@@ -23,9 +23,17 @@ namespace awfm {
     Model();
     AbstractAquiferDrawdownModel *aquiferDrawdownModel() { return aquiferDrawdownModel_; }
 
+    LengthUnit lengthUnit() { return lengthUnit_; }
+    TimeUnit timeUnit() { return timeUnit_; }
+    DischargeUnit dischargeUnit() { return dischargeUnit_; }
+
     void setAquiferDrawdownModel(AbstractAquiferDrawdownModel*);
     void setWells(QList<Well> wells);
     void setTemporalDomain(TemporalDomain td);
+
+    void setLengthUnit(LengthUnit u) { lengthUnit_ = u; }
+    void setTimeUnit(TimeUnit u) { timeUnit_ = u; }
+    void setDischargeUnit(DischargeUnit u) { dischargeUnit_ = u; }
 
     QList<Well> wells() { return wells_; }
 

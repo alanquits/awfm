@@ -2,6 +2,7 @@
 #define ABSTRACTAQUIFERDRAWDOWNMODEL_H
 
 #include <QList>
+#include <QString>
 #include "well.h"
 
 namespace awfm {
@@ -10,6 +11,7 @@ namespace awfm {
         THEIS,
         HANTUSHJACOB
     } AquiferDrawdownModel;
+
 
     class AbstractAquiferDrawdownModel
     {
@@ -20,6 +22,7 @@ namespace awfm {
         AbstractAquiferDrawdownModel();
 
         virtual AquiferDrawdownModel modelType()=0;
+        virtual QString modelTypeAsString()=0;
 
         double drawdown(QList<Well> &wells, double x, double y, double t);
         virtual double drawdownAtWell(Well &well, double x, double y, double t)=0;

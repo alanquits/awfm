@@ -10,8 +10,11 @@ namespace awfm {
 
     public:
         JacobSimplifiedWellLoss(double C);
+        virtual WellLossModel modelType() { return SIMPLIFIEDJACOB; }
+        virtual QString modelTypeAsString() { return "simplified jacob"; }
 //        virtual double drawdown(Well &w, double t);
         virtual double drawdown(double Q);
+
     };
 }
 

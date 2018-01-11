@@ -1,6 +1,7 @@
+#include "well.h"
 #include "jacobwellloss.h"
 #include "jacobsimplifiedwellloss.h"
-#include "well.h"
+
 
 #include <cmath>
 

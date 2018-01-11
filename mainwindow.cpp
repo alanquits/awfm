@@ -54,12 +54,14 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QMessageBox>
+#include <QFileDialog>
 
 #include "mainwindow.h"
 #include "aquiferdrawdowndlg.h"
 #include "editwellsdlg.h"
 #include "pumpingratesdlg.h"
 #include "theis.h"
+#include "modelio.h"
 
 // ![0]
 
@@ -90,15 +92,15 @@ void MainWindow::createActions()
 
     openAct = new QAction(tr("&Open"), this);
     openAct->setShortcuts(QKeySequence::Open);
-    connect(openAct, &QAction::triggered, this, &MainWindow::dummySlot);
+    connect(openAct, &QAction::triggered, this, &MainWindow::openModel);
 
     saveAct = new QAction(tr("&Save"), this);
     saveAct->setShortcuts(QKeySequence::Save);
-    connect(saveAct, &QAction::triggered, this, &MainWindow::dummySlot);
+    connect(saveAct, &QAction::triggered, this, &MainWindow::saveModel);
 
     saveAsAct = new QAction(tr("Save &As"), this);
     saveAsAct->setShortcuts(QKeySequence::SaveAs);
-    connect(saveAsAct, &QAction::triggered, this, &MainWindow::dummySlot);
+    connect(saveAsAct, &QAction::triggered, this, &MainWindow::saveModelAs);
 
     exitAct = new QAction(tr("E&xit"), this);
     exitAct->setShortcuts(QKeySequence::Quit);
@@ -161,18 +163,44 @@ void MainWindow::createMenus()
     menuBar()->addMenu(pestMenu);
 }
 
+bool MainWindow::okToProceed()
+{
+    if (isDirty_) {
+        int ret = QMessageBox::warning(this, tr("AWFM"),
+            tr("The current model has unsaved changes.\n"
+               "What would you like to do?"),
+               QMessageBox::Save | QMessageBox::Discard
+               | QMessageBox::Cancel,
+               QMessageBox::Save);
+
+        switch (ret) {
+            case QMessageBox::Save:
+                saveModel();
+                return true;
+            case QMessageBox::Discard:
+                return true;
+            case QMessageBox::Cancel:
+                return false;
+        }
+    }
+    return true;
+}
+
 void MainWindow::setDirty(bool dirty)
 {
     isDirty_ = dirty;
     saveAct->setEnabled(dirty);
-    saveAsAct->setEnabled(dirty);
 }
 
 void MainWindow::setModelLoaded(bool loaded)
 {
     modelMenu->setEnabled(loaded);
     pestMenu->setEnabled(loaded);
+    saveAsAct->setEnabled(loaded);
     modelLoaded_ = loaded;
+    if (!loaded) {
+        modelFileName_ = "";
+    }
 }
 
 void MainWindow::newFile()
@@ -187,6 +215,7 @@ void MainWindow::newFile()
         //TODO
     } else {
         model_ = awfm::Model();
+        modelFileName_ = "";
         setDirty(true);
         setModelLoaded(true);
     }
@@ -207,6 +236,7 @@ void MainWindow::editAquiferDrawdownMethod()
             double mpOverKp = dlg.mpOverKp();
             //model_.setAquiferDrawdownModel(awfm::HantushJacob(S, T, mpOverKp); // TODO
         }
+        setDirty(true);
     }
 }
 
@@ -215,7 +245,9 @@ void MainWindow::editWells()
     EditWellsDlg dlg(&model_);
     if (dlg.exec()) {
         model_.setWells(dlg.wells());
+        setDirty(true);
     }
+
 }
 
 void MainWindow::editPumpingRates()
@@ -223,6 +255,56 @@ void MainWindow::editPumpingRates()
     PumpingRatesDlg dlg(&model_);
     if (dlg.exec()) {
         //TODO
+        setDirty(true);
+    }
+}
+
+void MainWindow::openModel()
+{
+    if (okToProceed()) {
+        QString err_msg;
+        QString file_name = QFileDialog::getOpenFileName(this,
+            tr("Open Model"), ".",
+            tr("SQLite Files (*.db)"));
+        if (awfm::ModelIO::load(&model_, file_name, &err_msg)) {
+            modelFileName_ = file_name;
+            setModelLoaded(true);
+        } else {
+            QMessageBox::warning(this, "Load Error",
+                err_msg, QMessageBox::Ok);
+        }
+    }
+}
+
+void MainWindow::saveModel()
+{
+    if (!modelFileName_.isEmpty()) {
+        if (awfm::Utility::fileExists(modelFileName_)) {
+            QFile(modelFileName_).remove();
+        }
+        QString err_msg;
+        if (!awfm::ModelIO::save(&model_, modelFileName_, &err_msg)) {
+            QMessageBox::warning(this, "Save Error", err_msg, QMessageBox::Ok);
+        } else {
+            setDirty(false);
+        }
+    } else {
+        saveModelAs();
+    }
+}
+
+void MainWindow::saveModelAs()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+                               ".",
+                               tr("SQLite (*.db)"));
+    if (fileName.isEmpty()) {
+        return;
+    }
+
+    if (QFileInfo(QFile(fileName)).suffix() == "db") {
+        modelFileName_ = fileName;
+        saveModel();
     }
 }
 

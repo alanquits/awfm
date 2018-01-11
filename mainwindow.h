@@ -63,6 +63,9 @@ public slots:
     void editAquiferDrawdownMethod();
     void editWells();
     void editPumpingRates();
+    void openModel();
+    void saveModel();
+    void saveModelAs();
     void dummySlot();
 
 public:
@@ -72,11 +75,13 @@ public:
 private:
     void createActions();
     void createMenus();
+    bool okToProceed();
     void setDirty(bool);
     void setModelLoaded(bool);
 
     bool isDirty_;
     bool modelLoaded_;
+    QString modelFileName_;
     awfm::Model model_;
 
     QMenu *fileMenu;

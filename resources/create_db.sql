@@ -27,36 +27,30 @@ create table fk_time_units (
     unit text
   , multiplier real
 );
-insert into fk_time_units values ('day', 1.0);
-insert into fk_time_units values ('hour', 1.0/24.0);
-insert into fk_time_units values ('minute', 1.0/1440.0);
-insert into fk_time_units values ('second', 1.0/86400.0);
+insert into fk_time_units values ('days', 1.0);
+insert into fk_time_units values ('hours', 1.0/24.0);
+insert into fk_time_units values ('minutes', 1.0/1440.0);
+insert into fk_time_units values ('seconds', 1.0/86400.0);
 
 create table fk_discharge_units(
   unit text
 , multiplier real
 );
-insert into fk_discharge_units values ("m3/day", 1.0);
-insert into fk_discharge_units values ("ft3/sec", 2446.58);
-insert into fk_discharge_units values ("gal/min", 5.45099);
+insert into fk_discharge_units values ('m3/day', 1.0);
+insert into fk_discharge_units values ('ft3/sec', 2446.58);
+insert into fk_discharge_units values ('gal/min', 5.45099);
 
 create table fk_aquifer_drawdown_models (
   aquifer_drawdown_model text primary key
 );
-insert into fk_aquifer_drawdown_models values ("theis");
-insert into fk_aquifer_drawdown_models values ("hantush-jacob");
+insert into fk_aquifer_drawdown_models values ('theis');
+insert into fk_aquifer_drawdown_models values ('hantush-jacob');
 
 create table fk_well_loss_models (
   well_loss_model text primary key
 );
 insert into fk_well_loss_models values ('jacob');
 insert into fk_well_loss_models values ('simplified jacob');
-
-create table fk_spatial_domain_types (
-    spatial_domain_type text primary key
-  , description text
-);
-insert into fk_spatial_domain_types values ('wells', 'X/Y coordinates are coincident with well locations and well-loss is modeled');
 
 create table fk_temporal_domain_types (
     temporal_domain_type text primary key
@@ -67,15 +61,10 @@ insert into fk_temporal_domain_types values ('freeform', 'Times are provided by 
 insert into fk_temporal_domain_types values ('wells', 'Times are coincident with observed water levels at wells');
 
 create table settings (
-    input_length_unit text references fk_length_units (length_unit)
-  , input_time_unit text references fk_time_units (time_unit)
-  , input_discharge_unit text references fk_discharge_units (discharge_unit)
-  , output_length_unit text references fk_length_units (length_unit)
-  , output_time_unit text references fk_time_units (time_unit)
+    length_unit text references fk_length_units (length_unit)
+  , time_unit text references fk_time_units (time_unit)
+  , discharge_unit text references fk_discharge_units (discharge_unit)
   , aquifer_drawdown_model text references fk_aquifer_drawdown_models (aquifer_drawdown_model)
-  , well_loss_model text references fk_well_loss_models (well_loss_model)
-  , results_directory text
-  , results_directory_is_relative boolean
 );
 
 create table wells (
@@ -84,28 +73,24 @@ create table wells (
   , y real
   , rw real
   , h0 real
+  , well_loss_model text references fk_well_loss_models (well_loss_model)
 );
 
 create table aquifer_drawdown_model_parameters (
-  aquifer_drawdown_model text references fk_aquifer_drawdown_models (aquifer_drawdown_model)
-, shortname text
+  shortname text primary key
 , longname text
 , value real
 );
-insert into aquifer_drawdown_model_parameters values ('theis', 'S', 'storativity', NULL);
-insert into aquifer_drawdown_model_parameters values ('theis', 'T', 'transmissivity', NULL);
-insert into aquifer_drawdown_model_parameters values ('hantush-jacob', 'S', 'storativity', NULL);
-insert into aquifer_drawdown_model_parameters values ('hantush-jacob', 'T', 'transmissivity', NULL);
-insert into aquifer_drawdown_model_parameters values ('hantush-jacob', 'm*/K*', 'aquitard thickness/vertical conductivity', NULL);
+insert into aquifer_drawdown_model_parameters values ('S', 'storativity', NULL);
+insert into aquifer_drawdown_model_parameters values ('T', 'transmissivity', NULL);
+insert into aquifer_drawdown_model_parameters values ('m*/K*', 'aquitard thickness/vertical conductivity', NULL);
 
 create table well_loss_model_parameters (
-    well_loss_model references fk_well_loss_models (well_loss_model)
-  , shortname text
+    shortname text primary key
   , longname text
 );
-insert into well_loss_model_parameters values ('jacob', 'B', 'well-loss due to laminar flow');
-insert into well_loss_model_parameters values ('jacob', 'C', 'well-loss due to turbulant flow');
-insert into well_loss_model_parameters values ('simplified jacob', 'C', 'well-loss due to turbulant flow');
+insert into well_loss_model_parameters values ('B', 'well-loss due to laminar flow');
+insert into well_loss_model_parameters values ('C', 'well-loss due to turbulant flow');
 
 create table well_loss_model_parameter_values (
     well text references wells (name)
@@ -130,4 +115,4 @@ create table pest_windows (
     well text references wells (name)
   , t0 real
   , tf real
-);
+)

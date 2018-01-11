@@ -4,6 +4,10 @@
 #include "jacobsimplifiedwellloss.h"
 #include "theis.h"
 #include "temporaldomain.h"
+#include "resources/create_db.h"
+
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlQuery>
 
 
 namespace awfm {

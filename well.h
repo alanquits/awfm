@@ -2,7 +2,6 @@
 #define WELL_H
 
 #include <QString>
-
 #include "abstractwelllossmodel.h"
 #include "timeseries.h"
 
@@ -30,6 +29,7 @@ namespace awfm {
         double y() { return y_; }
         double rw() { return rw_; }
         double h0() { return h0_; }
+        AbstractWellLossModel *wellLossModel() { return wellLossModel_; }
         Timeseries wl() { return wl_; }
         Timeseries q() { return q_; }
         Timeseries dQ() { return dQ_; }
