@@ -182,8 +182,9 @@ bool MainWindow::okToProceed()
             case QMessageBox::Cancel:
                 return false;
         }
+    } else {
+        return true;
     }
-    return true;
 }
 
 void MainWindow::setDirty(bool dirty)
@@ -205,15 +206,7 @@ void MainWindow::setModelLoaded(bool loaded)
 
 void MainWindow::newFile()
 {
-    if (isDirty_) {
-        int ret = QMessageBox::warning(this, tr("AWFM"),
-            tr("The document has been modified.\n"
-               "Do you want to save your changes?"),
-               QMessageBox::Save | QMessageBox::Discard
-               | QMessageBox::Cancel,
-               QMessageBox::Save);
-        //TODO
-    } else {
+    if (okToProceed()) {
         model_ = awfm::Model();
         modelFileName_ = "";
         setDirty(true);
@@ -266,6 +259,12 @@ void MainWindow::openModel()
         QString file_name = QFileDialog::getOpenFileName(this,
             tr("Open Model"), ".",
             tr("SQLite Files (*.db)"));
+
+        if (file_name.isEmpty()) {
+            setModelLoaded(false);
+            return;
+        }
+
         if (awfm::ModelIO::load(&model_, file_name, &err_msg)) {
             modelFileName_ = file_name;
             setModelLoaded(true);
@@ -304,8 +303,10 @@ void MainWindow::saveModelAs()
 
     if (QFileInfo(QFile(fileName)).suffix() == "db") {
         modelFileName_ = fileName;
-        saveModel();
+    } else {
+        modelFileName_ = fileName + ".db";
     }
+    saveModel();
 }
 
 void MainWindow::dummySlot()

@@ -35,6 +35,7 @@ set(NAME_SOURCES
     slatec.f
     temporaldomain.cpp
     timeseriesplotwidget.cpp
+    xlsxdataframe.cpp
     resources/create_db.cpp
 )
 
@@ -64,12 +65,15 @@ set(NAME_HEADERS measure.h
     modelio.h
     temporaldomain.h
     timeseriesplotwidget.h
+    xlsxdataframe.h
     resources/create_db.h
 )
 
 add_subdirectory("libs/sqlite3")
+add_subdirectory("thirdparty/xlnt")
 
 INCLUDE_DIRECTORIES ("thirdparty/fast-cpp-csv-parser-master")
+include_directories ("thirdparty/xlnt/include")
 
 add_executable(${PROJECT_NAME} ${NAME_SOURCES} ${NAME_HEADERS})
-target_link_libraries(awfm Qt5::Widgets Qt5::Sql pthread sqlite3 )
+target_link_libraries(awfm Qt5::Widgets Qt5::Sql pthread sqlite3 xlnt)

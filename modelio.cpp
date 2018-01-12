@@ -196,25 +196,6 @@ bool ModelIO::save(Model *model, QString file_path, QString *err_msg)
         return true;
     }
 
-    bool ModelIO::setStaticVar(QString table_name, QString field_name,
-                               double value, QString *err_msg)
-    {
-        QSqlQuery qry;
-        qry.prepare("update ? set ?=?");
-        qry.addBindValue(table_name);
-        qry.addBindValue(field_name);
-        qry.addBindValue(value);
-
-        qry.exec();
-
-        if (qry.lastError().isValid()) {
-            *err_msg = QString("Sql Error: %1").arg(qry.lastError().text());
-            return false;
-        }
-
-        return true;
-    }
-
     bool ModelIO::setAquiferDrawdownParameter(QString shortname, double value, QString *err_msg)
     {
         QSqlQuery qry;

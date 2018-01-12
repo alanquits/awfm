@@ -14,6 +14,7 @@
 #include "importdlg.h"
 #include "abstractdataframe.h"
 #include "sqlitedataframe.h"
+#include "xlsxdataframe.h"
 
 ImportDlg::ImportDlg(QStringList targets)
 {
@@ -99,6 +100,10 @@ void ImportDlg::setDataFrame()
     if (fi.suffix() == "db") {
         awfm::SQLiteDataframe *sqliteDf = new awfm::SQLiteDataframe(fi.absoluteFilePath());
         df_ = sqliteDf;
+        dfOnStack_ = true;
+    } else if (fi.suffix() == "xlsx") {
+        awfm::XlsxDataFrame *xlsxDf = new awfm::XlsxDataFrame(fi.absoluteFilePath());
+        df_ = xlsxDf;
         dfOnStack_ = true;
     } else {
         dfOnStack_ = false;

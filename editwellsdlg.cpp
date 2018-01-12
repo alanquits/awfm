@@ -33,10 +33,13 @@ void EditWellsDlg::initWidgets()
     QStringList headers;
     headers << "name" << "x" << "y" << "rw" << "h0";
     table = new AWFMTableWidget(0, 5, headers);
+
     connect(table, SIGNAL(importSelected()),
             this, SLOT(import()));
+
     connect(table, SIGNAL(insertAboveSelected(QList<int>)),
             this, SLOT(insertAbove(QList<int>)));
+
     connect(table, SIGNAL(insertBelowSelected(QList<int>)),
             this, SLOT(insertBelow(QList<int>)));
 
@@ -140,11 +143,11 @@ void EditWellsDlg::import()
 
     wells_.clear();
     while (df->nextRow()) {
-        QString name = df->getString(0);
-        double x = df->getDouble(1);
-        double y = df->getDouble(2);
-        double rw = df->getDouble(3);
-        double h0 = df->getDouble(4);
+        QString name = df->getString(df->columnIndex(target_map["name"]));
+        double x = df->getDouble(df->columnIndex(target_map["x"]));
+        double y = df->getDouble(df->columnIndex(target_map["y"]));
+        double rw = df->getDouble(df->columnIndex(target_map["rw"]));
+        double h0 = df->getDouble(df->columnIndex(target_map["h0"]));
         wells_.append(awfm::Well(name, x, y, rw, h0));
     }
     fillTableWithWells();

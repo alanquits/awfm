@@ -4,9 +4,11 @@
 #include "awfmtablewidget.h"
 #include "model.h"
 #include "well.h"
+
 #include <QDialog>
 #include <QDialogButtonBox>
 
+class QDialogButtonBox;
 class QLabel;
 class QLineEdit;
 class QComboBox;
@@ -21,7 +23,6 @@ private:
     AWFMTableWidget *rawTable;
     QLabel *recordCountLabel;
     QTableWidget *reducedTable;
-    QDialogButtonBox *buttonBox;
     QList<awfm::Well> wells_; // A local copy of wells list to modify
 
     QLabel *wellsLabel;
@@ -32,6 +33,7 @@ private:
     QLineEdit *errorCodeLineEdit;
     QLabel *onErrorLabel;
     QComboBox *onErrorComboBox;
+    QPushButton *applyErrorCodeButton;
 
     QLabel* maxValueLabel;
     QLineEdit* maxValueLineEdit;
@@ -39,23 +41,24 @@ private:
     QLineEdit* minValueLineEdit;
     QLabel* minMagnitudeLabel;
     QLineEdit* minMagnitudeLineEdit;
+    QPushButton *applyRangeButton;
 
-    QCheckBox *projectOntoLineCheckBox;
     QLabel* t0ProjectLabel;
     QLineEdit* t0ProjectLineEdit;
     QLabel* tfProjectLabel;
     QLineEdit* tfProjectLineEdit;
     QLabel* dtProjectLabel;
     QLineEdit* dtProjectLineEdit;
+    QPushButton *applyProjectionButton;
 
     QGroupBox *averagingGroupBox;
     QRadioButton *averageByToleranceRadio;
     QLineEdit *averageToleranceLineEdit;
     QRadioButton *averageBySignRadio;
     QRadioButton *noAveragingRadio;
+    QPushButton *applyAveragingButton;
 
-    QPushButton *calculateButton;
-    QPushButton *cancelButton;
+    QDialogButtonBox *buttonBox;
 
 
 

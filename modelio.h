@@ -17,7 +17,6 @@ namespace awfm {
         // Output functions
         static bool save(Model *model, QString file_path, QString *err_msg);
         static bool setStaticVar(QString table_name, QString field_name, QString value, QString *err_msg);
-        static bool setStaticVar(QString table_name, QString field_name, double value, QString *err_msg);
         static bool setAquiferDrawdownParameter(QString shortname, double value, QString *err_msg);
         static bool insertWells(Model* model, QString *err_msg);
     };

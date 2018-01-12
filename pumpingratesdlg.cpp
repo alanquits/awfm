@@ -1,5 +1,6 @@
 #include "pumpingratesdlg.h"
 
+#include <QDialogButtonBox>
 #include <QLabel>
 #include <QLineEdit>
 #include <QComboBox>
@@ -40,6 +41,7 @@ void PumpingRatesDlg::initWidgets()
     onErrorComboBox->addItems(QStringList()
                               << "Remove"
                               << "Linear Interpolate");
+    applyErrorCodeButton = new QPushButton("Apply");
 
     maxValueLabel = new QLabel("Max Value: ");
     maxValueLineEdit = new QLineEdit();
@@ -50,7 +52,8 @@ void PumpingRatesDlg::initWidgets()
     minMagnitudeLabel = new QLabel("Min Magnitude: ");
     minMagnitudeLineEdit = new QLineEdit();
 
-    projectOntoLineCheckBox = new QCheckBox("Project Onto Line");
+    applyRangeButton = new QPushButton("Apply");
+
     t0ProjectLabel = new QLabel("t0: ");
     t0ProjectLineEdit = new QLineEdit();
     tfProjectLabel = new QLabel("tf: ");
@@ -58,14 +61,23 @@ void PumpingRatesDlg::initWidgets()
     dtProjectLabel = new QLabel("dt: ");
     dtProjectLineEdit = new QLineEdit();
 
+    applyProjectionButton = new QPushButton("Apply");
+
     averagingGroupBox = new QGroupBox("Data Reduction");
     averageByToleranceRadio = new QRadioButton("Average by Tolerance");
     averageToleranceLineEdit = new QLineEdit();
     averageBySignRadio = new QRadioButton("Average by Sign");
     noAveragingRadio = new QRadioButton("No Averaging");
+    applyAveragingButton = new QPushButton("Apply");
 
-    calculateButton = new QPushButton("Calculate");
-    cancelButton = new QPushButton("Cancel");
+    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
+                                     | QDialogButtonBox::Cancel);
+
+    connect(buttonBox, &QDialogButtonBox::accepted,
+            this, &QDialog::accept);
+
+    connect(buttonBox, &QDialogButtonBox::rejected,
+            this, &QDialog::reject);
 }
 
 void PumpingRatesDlg::initTables()
@@ -85,8 +97,6 @@ void PumpingRatesDlg::initLayout()
     leftLayout->addWidget(rawTable);
     rawTable->setMinimumWidth(250);
     leftLayout->addWidget(recordCountLabel);
-    //leftLayout->addWidget(reducedTable);
-    //reducedTable->setMinimumWidth(260);
 
     QHBoxLayout *applyToAllWellsLayout = new QHBoxLayout();
     applyToAllWellsLayout->addWidget(wellsLabel);
@@ -103,7 +113,16 @@ void PumpingRatesDlg::initLayout()
     minMaxLayout->addWidget(maxValueLineEdit);
     minMaxLayout->addWidget(minMagnitudeLabel);
     minMaxLayout->addWidget(minMagnitudeLineEdit);
-    rangesGroupBox->setLayout(minMaxLayout);
+
+    QHBoxLayout *minMaxApplyLayout = new QHBoxLayout();
+    minMaxApplyLayout->addStretch();
+    minMaxApplyLayout->addWidget(applyRangeButton);
+
+    QVBoxLayout *minMaxLayoutWithApply = new QVBoxLayout();
+    minMaxLayoutWithApply->addLayout(minMaxLayout);
+    minMaxLayoutWithApply->addLayout(minMaxApplyLayout);
+
+    rangesGroupBox->setLayout(minMaxLayoutWithApply);
     rightLayout->addWidget(rangesGroupBox);
 
     QGroupBox *errorGroupBox = new QGroupBox("Erroneous Data");
@@ -112,12 +131,19 @@ void PumpingRatesDlg::initLayout()
     errorCodeLayout->addWidget(errorCodeLineEdit);
     errorCodeLayout->addWidget(onErrorLabel);
     errorCodeLayout->addWidget(onErrorComboBox);
-    errorGroupBox->setLayout(errorCodeLayout);
+
+    QHBoxLayout *errorCodeApplyLayout = new QHBoxLayout();
+    errorCodeApplyLayout->addStretch();
+    errorCodeApplyLayout->addWidget(applyErrorCodeButton);
+
+    QVBoxLayout *errorCodeLayoutWithApply = new QVBoxLayout();
+    errorCodeLayoutWithApply->addLayout(errorCodeLayout);
+    errorCodeLayoutWithApply->addLayout(errorCodeApplyLayout);
+    errorGroupBox->setLayout(errorCodeLayoutWithApply);
     rightLayout->addWidget(errorGroupBox);
 
     QGroupBox *projectionGroupBox = new QGroupBox("Projection");
-    QVBoxLayout *projectOntoLineLayoutMain = new QVBoxLayout();
-    projectOntoLineLayoutMain->addWidget(projectOntoLineCheckBox);
+
     QHBoxLayout *projectOntoLineLayout = new QHBoxLayout();
     projectOntoLineLayout->addWidget(t0ProjectLabel);
     projectOntoLineLayout->addWidget(t0ProjectLineEdit);
@@ -125,8 +151,16 @@ void PumpingRatesDlg::initLayout()
     projectOntoLineLayout->addWidget(tfProjectLineEdit);
     projectOntoLineLayout->addWidget(dtProjectLabel);
     projectOntoLineLayout->addWidget(dtProjectLineEdit);
-    projectOntoLineLayoutMain->addLayout(projectOntoLineLayout);
-    projectionGroupBox->setLayout(projectOntoLineLayoutMain);
+
+    QHBoxLayout *projectOntoLineApplyLayout = new QHBoxLayout();
+    projectOntoLineApplyLayout->addStretch();
+    projectOntoLineApplyLayout->addWidget(applyProjectionButton);
+
+    QVBoxLayout *projectOntoLineLayoutWithApply = new QVBoxLayout();
+    projectOntoLineLayoutWithApply->addLayout(projectOntoLineLayout);
+    projectOntoLineLayoutWithApply->addLayout(projectOntoLineApplyLayout);
+
+    projectionGroupBox->setLayout(projectOntoLineLayoutWithApply);
     rightLayout->addWidget(projectionGroupBox);
 
 
@@ -137,15 +171,22 @@ void PumpingRatesDlg::initLayout()
     averagingLayout->addWidget(noAveragingRadio);
     averagingLayout->addWidget(averageBySignRadio);
     averagingLayout->addLayout(averageByToleranceLayout);
-    averagingGroupBox->setLayout(averagingLayout);
+
+    QHBoxLayout *averagingApplyLayout = new QHBoxLayout();
+    averagingApplyLayout->addStretch();
+    averagingApplyLayout->addWidget(applyAveragingButton);
+
+    QVBoxLayout *averagingLayoutWithApply = new QVBoxLayout();
+    averagingLayoutWithApply->addLayout(averagingLayout);
+    averagingLayoutWithApply->addLayout(averagingApplyLayout);
+
+    averagingGroupBox->setLayout(averagingLayoutWithApply);
     rightLayout->addWidget(averagingGroupBox);
 
-    QHBoxLayout *calculateLayout = new QHBoxLayout();
-    calculateLayout->addStretch();
-    calculateLayout->addWidget(cancelButton);
-    calculateLayout->addWidget(calculateButton);
-    rightLayout->addLayout(calculateLayout);
-
+    QHBoxLayout *bottomLayout = new QHBoxLayout();
+    bottomLayout->addStretch();
+    bottomLayout->addWidget(buttonBox);
+    rightLayout->addLayout(bottomLayout);
 
     QHBoxLayout *topLayout = new QHBoxLayout();
     topLayout->addLayout(leftLayout);
