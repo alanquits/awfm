@@ -36,6 +36,8 @@ namespace awfm {
     void setDischargeUnit(DischargeUnit u) { dischargeUnit_ = u; }
 
     QList<Well> wells() { return wells_; }
+    QList<Well>* wellsRef() { return &wells_; }
+    Well* wellRef(int idx) { return &wells_[idx]; }
 
     void run();
     void runAtWell(size_t idx);

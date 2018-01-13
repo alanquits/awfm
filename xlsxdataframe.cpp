@@ -33,7 +33,7 @@ namespace awfm {
     bool XlsxDataFrame::nextRow()
     {
         currentRow_++;
-        if (currentRow_ == ws_.rows().length()) {
+        if (currentRow_ == ws_.rows().length()+1) {
             return false;
         } else {
             return true;

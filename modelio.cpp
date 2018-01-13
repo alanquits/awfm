@@ -27,6 +27,9 @@ bool ModelIO::load(Model *model, QString file_path, QString *err_msg)
     if (!loadWells(model, err_msg)) {
         return false;
     }
+    if (!loadPumpingRates(model, err_msg)) {
+        return false;
+    }
 }
 
 bool ModelIO::getTheisParameters(double &S, double &T, QString *err_msg)
@@ -110,6 +113,42 @@ bool ModelIO::loadWells(Model *model, QString *err_msg)
         return false;
     }
     model->setWells(wells);
+    return true;
+}
+
+bool ModelIO::loadPumpingRates(Model *model, QString *err_msg)
+{
+    QMap<QString, Timeseries> ts_map;    // Map from well name to time series
+
+    QSqlQuery qry;
+    qry.prepare(
+        "select well, t, v "
+        "from pumping_rates "
+        "order by well, t");
+
+    qry.exec();
+    while (qry.next()) {
+        QString well_name = qry.value(0).toString();
+        double t = qry.value(1).toDouble();
+        double v = qry.value(2).toDouble();
+        if (!ts_map.contains(well_name)) {
+            ts_map[well_name] = Timeseries();
+        }
+        ts_map[well_name].append(t, v);
+    }
+
+    for (int i = 0; i < (model->wellsRef()->length()); i++) {
+        Well *w = model->wellRef(i);
+        if (ts_map.contains(w->name())) {
+            w->setQ(ts_map[w->name()]);
+        }
+    }
+
+    if (qry.lastError().isValid()) {
+        *err_msg = QString("Sql Error: %1").arg(qry.lastError().text());
+        return false;
+    }
+
     return true;
 }
 
@@ -218,11 +257,8 @@ bool ModelIO::save(Model *model, QString file_path, QString *err_msg)
     {
         QList<Well> ws = model->wells();
         QSqlQuery qry;
-        qry.prepare(
-            "insert into wells "
-            "(name, x, y, rw, h0, well_loss_model) "
-            "values"
-            "(?, ?, ?, ?, ?, ?)");
+
+
         foreach(Well w, ws) {
             QString name = w.name();
             double x = w.x();
@@ -230,6 +266,7 @@ bool ModelIO::save(Model *model, QString file_path, QString *err_msg)
             double rw = w.rw();
             double h0 = w.h0();
             QString well_loss_model = w.wellLossModel()->modelTypeAsString();
+
 
             qry.prepare(
                 "insert into wells "
@@ -243,6 +280,22 @@ bool ModelIO::save(Model *model, QString file_path, QString *err_msg)
             qry.addBindValue(h0);
             qry.addBindValue(well_loss_model);
             qry.exec();
+
+
+            qry.prepare(
+                "insert into pumping_rates "
+                "(well, t, v) "
+                "values "
+                "(?, ?, ?)");
+            Timeseries q = w.q();
+            for (int i = 0; i < q.size(); i++) {
+                double t = q.t(i);
+                double v = q.v(i);
+                qry.addBindValue(w.name());
+                qry.addBindValue(t);
+                qry.addBindValue(v);
+                qry.exec();
+            }
         }
 
         if (qry.lastError().isValid()) {

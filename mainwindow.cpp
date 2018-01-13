@@ -247,7 +247,7 @@ void MainWindow::editPumpingRates()
 {
     PumpingRatesDlg dlg(&model_);
     if (dlg.exec()) {
-        //TODO
+        model_.setWells(dlg.wells());
         setDirty(true);
     }
 }

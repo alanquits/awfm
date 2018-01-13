@@ -22,7 +22,6 @@ class PumpingRatesDlg : public QDialog {
 private:
     AWFMTableWidget *rawTable;
     QLabel *recordCountLabel;
-    QTableWidget *reducedTable;
     QList<awfm::Well> wells_; // A local copy of wells list to modify
 
     QLabel *wellsLabel;
@@ -67,7 +66,6 @@ public:
     void initWidgets();
     void initTables();
     void initLayout();
-    void fillTableWithPumpingRates();
     void setRecordCount(int records);
     QList<awfm::Well> wells() { return wells_; }
 
@@ -77,6 +75,7 @@ public slots:
     void insertAbove(QList<int> selected_rows);
     void insertBelow(QList<int> selected_rows);
     void deleteRows(QList<int> selected_rows);
+    void fillTableWithPumpingRates();
 };
 
 

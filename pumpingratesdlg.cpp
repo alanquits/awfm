@@ -1,4 +1,7 @@
 #include "pumpingratesdlg.h"
+#include "importdlg.h"
+#include "timeseries.h"
+
 
 #include <QDialogButtonBox>
 #include <QLabel>
@@ -7,6 +10,7 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QGroupBox>
+#include <QMessageBox>
 #include <QRadioButton>
 #include <QCheckBox>
 #include <QPushButton>
@@ -17,8 +21,8 @@ PumpingRatesDlg::PumpingRatesDlg(awfm::Model *model)
 {
     wells_ = model->wells();
     setWindowTitle("Edit Pumping Rates");
-    initWidgets();
     initTables();
+    initWidgets();
     initLayout();
 }
 
@@ -31,6 +35,10 @@ void PumpingRatesDlg::initWidgets()
     for (int i = 0; i < wells_.size(); i++) {
         wellsComboBox->addItem(wells_[i].name());
     }
+    connect(wellsComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(fillTableWithPumpingRates()));
+    fillTableWithPumpingRates();
+
     applyToAllWellsCheckBox = new QCheckBox("Apply to All Wells");
     applyToAllWellsCheckBox->setChecked(true);
 
@@ -83,10 +91,9 @@ void PumpingRatesDlg::initWidgets()
 void PumpingRatesDlg::initTables()
 {
     rawTable = new AWFMTableWidget(0, 2, QStringList() << "t" << "Q");
-    reducedTable = new QTableWidget();
-    reducedTable->setRowCount(0);
-    reducedTable->setColumnCount(2);
-    reducedTable->setHorizontalHeaderLabels(QStringList() << "t" << "Q");
+
+    connect(rawTable, SIGNAL(importSelected()),
+            this, SLOT(import()));
 }
 
 void PumpingRatesDlg::initLayout()
@@ -198,6 +205,19 @@ void PumpingRatesDlg::initLayout()
     setLayout(mainLayout);
 }
 
+void PumpingRatesDlg::fillTableWithPumpingRates()
+{
+    awfm::Timeseries ts = wells_[wellsComboBox->currentIndex()].q();
+    rawTable->setRowCount(ts.size());
+    for (int i = 0; i < ts.size(); i++) {
+        double t = ts.t(i);
+        double v = ts.v(i);
+        rawTable->setItem(i, 0, new QTableWidgetItem(QString("%1").arg(t)));
+        rawTable->setItem(i, 1, new QTableWidgetItem(QString("%1").arg(v)));
+    }
+    recordCountLabel->setText(QString("%1 records").arg(ts.size()));
+}
+
 void PumpingRatesDlg::setRecordCount(int records)
 {
     recordCountLabel->setText(QString("%1 records").arg(records));
@@ -210,7 +230,37 @@ void PumpingRatesDlg::cellChanged(QTableWidgetItem *item)
 
 void PumpingRatesDlg::import()
 {
+    int well_idx = wellsComboBox->currentIndex();
 
+    QStringList targets;
+    targets << "t" << "Q";
+    ImportDlg *dlg = new ImportDlg(targets);
+
+    if (!dlg->exec()) {
+        return;
+    }
+
+    awfm::AbstractDataFrame *df = dlg->df();
+    QMap<QString,QString> target_map = dlg->getTargetMap();
+    df->windUp();
+
+    if (df->hasError()) {
+        QMessageBox::warning(this, tr("awfm"),
+            df->error(), QMessageBox::Ok);
+        return;
+    }
+
+    awfm::Timeseries ts;
+    while (df->nextRow()) {
+        double t = df->getDouble(df->columnIndex(target_map["t"]));
+        double v = df->getDouble(df->columnIndex(target_map["Q"]));
+        ts.append(t, v);
+    }
+
+    wells_[well_idx].setQ(ts);
+
+    fillTableWithPumpingRates();
+    delete df;
 }
 
 void PumpingRatesDlg::insertAbove(QList<int> selected_rows)
