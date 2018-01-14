@@ -212,8 +212,8 @@ void PumpingRatesDlg::fillTableWithPumpingRates()
     for (int i = 0; i < ts.size(); i++) {
         double t = ts.t(i);
         double v = ts.v(i);
-        rawTable->setItem(i, 0, new QTableWidgetItem(QString("%1").arg(t)));
-        rawTable->setItem(i, 1, new QTableWidgetItem(QString("%1").arg(v)));
+        rawTable->setItem(i, 0, new QTableWidgetItem(QString("%1").arg(t, 0, 'f', 6)));
+        rawTable->setItem(i, 1, new QTableWidgetItem(QString("%1").arg(v, 0, 'f', 6)));
     }
     recordCountLabel->setText(QString("%1 records").arg(ts.size()));
 }
@@ -251,10 +251,38 @@ void PumpingRatesDlg::import()
     }
 
     awfm::Timeseries ts;
+
+    bool reading_values = false;
+    bool values_out_of_order = false;
     while (df->nextRow()) {
-        double t = df->getDouble(df->columnIndex(target_map["t"]));
-        double v = df->getDouble(df->columnIndex(target_map["Q"]));
-        ts.append(t, v);
+
+        double t, v;
+
+        if (df->isNull(df->columnIndex(target_map["t"]))) {
+            continue;
+        } else {
+            t = df->getDouble(df->columnIndex(target_map["t"]));
+        }
+
+        if (!df->isNull(df->columnIndex(target_map["Q"]))) {
+            reading_values = true;
+            v = df->getDouble(df->columnIndex(target_map["Q"]));
+        } else {
+            v = -9999;
+        }
+
+        if (reading_values) {
+            if (!ts.append(t, v))
+            {
+                values_out_of_order = true;
+            }
+        }
+    }
+
+    if (values_out_of_order) {
+        QMessageBox::warning(this, "Source File Error",
+            "Not all values were imported. Time column is not"
+            " in chronological order or contains duplicates.");
     }
 
     wells_[well_idx].setQ(ts);

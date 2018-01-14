@@ -21,6 +21,7 @@ namespace awfm {
         virtual QString getString(int column_idx);
         virtual int getInt(int column_idx);
         virtual double getDouble(int column_idx);
+        virtual bool isNull(int column_idx);
         virtual void collectFieldNames();
     };
 }

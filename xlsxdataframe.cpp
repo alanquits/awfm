@@ -18,6 +18,11 @@ namespace awfm {
         return QString().fromStdString(value).toDouble();
     }
 
+    bool XlsxDataFrame::isNull(int column_idx)
+    {
+        return !ws_.cell(column_idx+1, currentRow_).has_value();
+    }
+
     int XlsxDataFrame::getInt(int column_idx)
     {
         std::string value = ws_.cell(column_idx+1, currentRow_).to_string();

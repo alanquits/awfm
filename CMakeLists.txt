@@ -10,6 +10,7 @@ find_package(Qt5Sql REQUIRED)
 set(NAME_SOURCES
 #    testing.cpp
     aquiferdrawdowndlg.cpp
+    csvdataframe.cpp
     awfmtablewidget.cpp
     sqlitedataframe.cpp
     main.cpp
@@ -41,6 +42,7 @@ set(NAME_SOURCES
 
 set(NAME_HEADERS measure.h
     aquiferdrawdowndlg.h
+    csvdataframe.h
     specialfunctions.h
 #    io.h
     sqlitedataframe.h

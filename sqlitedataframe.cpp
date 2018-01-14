@@ -69,6 +69,11 @@ namespace awfm {
         return sqlite3_column_double(stmt_, column_idx);
     }
 
+    bool SQLiteDataframe::isNull(int column_idx)
+    {
+        return sqlite3_column_type(stmt_, column_idx) == SQLITE_NULL;
+    }
+
     int SQLiteDataframe::getInt(int column_idx)
     {
         return sqlite3_column_int(stmt_, column_idx);

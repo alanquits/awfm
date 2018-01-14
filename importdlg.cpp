@@ -6,6 +6,7 @@
 #include <QLineEdit>
 #include <QComboBox>
 #include <QPushButton>
+#include <QMessageBox>
 #include <QSizePolicy>
 #include <QVBoxLayout>
 
@@ -13,6 +14,7 @@
 #include "definitions.h"
 #include "importdlg.h"
 #include "abstractdataframe.h"
+#include "csvdataframe.h"
 #include "sqlitedataframe.h"
 #include "xlsxdataframe.h"
 
@@ -72,8 +74,12 @@ void ImportDlg::initLayout()
 
 void ImportDlg::fillTableComboBox()
 {
-    QStringList tables = df_->tables();
-    tableComboBox->addItems(tables);
+    if (dfOnStack_) {
+        QStringList tables = df_->tables();
+        tableComboBox->addItems(tables);
+    } else {
+        tableComboBox->clear();
+    }
 }
 
 void ImportDlg::fillFieldComboBoxes(QString table)
@@ -105,8 +111,16 @@ void ImportDlg::setDataFrame()
         awfm::XlsxDataFrame *xlsxDf = new awfm::XlsxDataFrame(fi.absoluteFilePath());
         df_ = xlsxDf;
         dfOnStack_ = true;
+    } else if (fi.suffix() == "csv") {
+        awfm::CSVDataFrame *csvDf = new awfm::CSVDataFrame(fi.absoluteFilePath());
+        df_ = csvDf;
+        dfOnStack_ = true;
     } else {
         dfOnStack_ = false;
+    }
+
+    if (dfOnStack_ && df_->hasError()) {
+        QMessageBox::warning(this, "Error", df_->error());
     }
 }
 

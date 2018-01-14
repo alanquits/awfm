@@ -255,6 +255,7 @@ bool ModelIO::save(Model *model, QString file_path, QString *err_msg)
 
     bool ModelIO::insertWells(Model *model, QString *err_msg)
     {
+        QSqlDatabase::database().transaction();
         QList<Well> ws = model->wells();
         QSqlQuery qry;
 
@@ -298,6 +299,7 @@ bool ModelIO::save(Model *model, QString file_path, QString *err_msg)
             }
         }
 
+        QSqlDatabase::database().commit();
         if (qry.lastError().isValid()) {
             *err_msg = QString("Sql Error: %1").arg(qry.lastError().text());
             return false;

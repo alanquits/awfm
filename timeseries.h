@@ -16,9 +16,9 @@ namespace awfm {
     public:
         Timeseries();
 
-        void append(double t, double v);
-        void append(double t);
-        void append(Measure m);
+        bool append(double t, double v);
+        bool append(double t);
+        bool append(Measure m);
 
         void readFromFile(QString file_path);
         void writeToFile(QString file_path);

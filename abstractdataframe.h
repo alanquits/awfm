@@ -25,6 +25,7 @@ namespace awfm {
         virtual QString getString(int column_idx)=0;
         virtual int getInt(int column_idx)=0;
         virtual double getDouble(int column_idx)=0;
+        virtual bool isNull(int column_idx)=0;
         virtual void collectFieldNames()=0;
         QStringList fieldNames() { return fieldNames_; }
     };

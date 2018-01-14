@@ -2,6 +2,7 @@
 //#include "io.h"
 
 #include <cassert>
+#include <QDebug>
 
 namespace awfm {
     Timeseries::Timeseries()
@@ -9,22 +10,30 @@ namespace awfm {
         errorCode_ = -999999;
     }
 
-    void Timeseries::append(double t, double v)
+    bool Timeseries::append(double t, double v)
     {
-        append(Measure(t, v))
-    ;}
-
-    void Timeseries::append(double t)
-    {
-        append(Measure(t));
+        return append(Measure(t, v));
     }
 
-    void Timeseries::append(Measure m)
+    bool Timeseries::append(double t)
+    {
+        return append(Measure(t));
+    }
+
+    bool Timeseries::append(Measure m)
     {
         if (data_.size() > 0) {
-            assert(m.t() > data_.back().t());
+            if (m.t() > data_.back().t()) {
+                data_.push_back(m);
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            data_.push_back(m);
+            return true;
         }
-        data_.push_back(m);
+
     }
 
 //    void Timeseries::readFromFile(QString file_path)

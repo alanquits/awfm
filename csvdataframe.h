@@ -2,24 +2,34 @@
 #define CSVDATAFRAME_H
 
 #include "abstractdataframe.h"
-#include "csv.h"
+
+#include <QTextStream>
 
 namespace awfm {
-    class CSVDataFrame : AbstractDataFrame {
+    class CSVDataFrame : public AbstractDataFrame {
 
     private:
-        io::LineReader *reader_;
+
+        QFile inputFile_;
+        QList<QString> rowValues_;
+        QTextStream *ts_;
+
+        void setFieldNames();
+
     public:
-        CSVDataFrame(QString infile);
+        CSVDataFrame(QString file_path);
         ~CSVDataFrame();
 
-        virtual int columns()=0;
+        virtual QStringList tables();
+        virtual void setTable(QString table_name);
         virtual int columnIndex(QString);
-        virtual void windUp()=0;
-        virtual void nextRow()=0;
-        virtual QString getString(int column_idx)=0;
-        virtual int getInt(int column_idx)=0;
-        virtual double getDouble(int column_idx)=0;
+        virtual void windUp();
+        virtual bool nextRow();
+        virtual QString getString(int column_idx);
+        virtual int getInt(int column_idx);
+        virtual double getDouble(int column_idx);
+        virtual bool isNull(int column_idx);
+        virtual void collectFieldNames();
     };
 }
 
