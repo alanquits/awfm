@@ -17,6 +17,11 @@ namespace awfm {
         measureState_ = NOVALUE;
     }
 
+    double Measure::setV(double v)
+    {
+        v_ = v;
+    }
+
     void Measure::absolute()
     {
         v_ = fabs(v_);

@@ -21,6 +21,8 @@ namespace awfm {
         double v() { return v_; }
         MeasureState measureState() { return measureState_; }
 
+        double setV(double v);
+
         void absolute();
         void scale(double s);
         void zeroBelow(double min_value);

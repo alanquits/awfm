@@ -180,10 +180,84 @@ namespace awfm {
         return 0;
     }
 
+    void Timeseries::removeByValue(double v)
+    {
+        for (int i = 0; i < data_.size(); i++) {
+            if (Utility::floatCompare(v, data_[i].v())) {
+                data_.removeAt(i);
+                i--;
+            }
+        }
+    }
+
+    void Timeseries::interpolateOverValue(double v)
+    {
+        for (int i = 0; i < data_.size(); i++) {
+            if (Utility::floatCompare(v, data_[i].v())) {
+                if (i == 0) {
+                    continue;
+                } else if (i+1 == data_.size()) {
+                    break;
+                } else {
+                    int interpolate_start_idx = i;
+                    int interpolate_end_idx;
+                    double prev_t = data_[i-1].t();
+                    double prev_v = data_[i-1].v();
+
+                    while (Utility::floatCompare(v, data_[i].v())) {
+                        if (i+1 == data_.size()) {
+                            break;
+                        } else {
+                            interpolate_end_idx = i;
+                            i++;
+                        }
+                    }
+
+                    double next_t = data_[i].t();
+                    double next_v = data_[i].v();
+
+                    double slope = (next_v - prev_v)/(next_t - prev_t);
+
+                    for (int j = interpolate_start_idx; j <= interpolate_end_idx; j++) {
+                        double dt = data_[j].t() - prev_t;
+                        data_[j].setV(prev_v + slope*dt);
+                    }
+                }
+            }
+        }
+    }
+
     void Timeseries::scale(double s)
     {
         for (size_t i = 0; i < data_.size(); i++) {
             data_[i].scale(s);
+        }
+    }
+
+    void Timeseries::setMinValue(double v)
+    {
+        for (size_t i = 0; i < data_.size(); i++) {
+            if (data_[i].v() < v) {
+                data_[i].setV(v);
+            }
+        }
+    }
+
+    void Timeseries::setMaxValue(double v)
+    {
+        for (size_t i = 0; i < data_.size(); i++) {
+            if (data_[i].v() > v) {
+                data_[i].setV(v);
+            }
+        }
+    }
+
+    void Timeseries::setMinMagnitude(double v)
+    {
+        for (size_t i = 0; i < data_.size(); i++) {
+            if (fabs(data_[i].v()) < fabs(v)) {
+                data_[i].setV(0);
+            }
         }
     }
 

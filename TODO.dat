@@ -1,0 +1,12 @@
+IO
+- change excel library
+- change raw sqlite3 c api to qsqldatabase
+
+Application-Wide
+- add recent files in file dialog
+- restrict line edits to numbers only where they can only be numbers
+- add start date option in settings
+
+Edit Wells Dialog
+- fix precision
+- add verification that well names are unique

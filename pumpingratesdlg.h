@@ -54,7 +54,6 @@ private:
     QRadioButton *averageByToleranceRadio;
     QLineEdit *averageToleranceLineEdit;
     QRadioButton *averageBySignRadio;
-    QRadioButton *noAveragingRadio;
     QPushButton *applyAveragingButton;
 
     QDialogButtonBox *buttonBox;
@@ -70,6 +69,9 @@ public:
     QList<awfm::Well> wells() { return wells_; }
 
 public slots:
+    void applyAveragingButtonClicked();
+    void applyErrorCodeButtonClicked();
+    void applyRangeButtonClicked();
     void cellChanged(QTableWidgetItem *item);
     void import();
     void insertAbove(QList<int> selected_rows);

@@ -48,7 +48,12 @@ namespace awfm {
         bool isEqual(Timeseries &ts, double tol=1e-6);
         double linearInterpolateValueAtTime(double t);
         void projectOntoLine(double tmin, double tmax, double dt);
+        void removeByValue(double v);
+        void interpolateOverValue(double v);
         void scale(double s);
+        void setMinValue(double v);
+        void setMaxValue(double v);
+        void setMinMagnitude(double v);
         int sign(int idx);
         void signChanges(QList<int> *idxs, QList<int> *signs);
         Timeseries slice(size_t start_idx, size_t end_idx);

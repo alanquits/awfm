@@ -1,6 +1,7 @@
 #include "pumpingratesdlg.h"
 #include "importdlg.h"
 #include "timeseries.h"
+#include "well.h"
 
 
 #include <QDialogButtonBox>
@@ -8,6 +9,7 @@
 #include <QLineEdit>
 #include <QComboBox>
 #include <QHBoxLayout>
+#include <QHeaderView>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QMessageBox>
@@ -75,7 +77,6 @@ void PumpingRatesDlg::initWidgets()
     averageByToleranceRadio = new QRadioButton("Average by Tolerance");
     averageToleranceLineEdit = new QLineEdit();
     averageBySignRadio = new QRadioButton("Average by Sign");
-    noAveragingRadio = new QRadioButton("No Averaging");
     applyAveragingButton = new QPushButton("Apply");
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
@@ -86,11 +87,21 @@ void PumpingRatesDlg::initWidgets()
 
     connect(buttonBox, &QDialogButtonBox::rejected,
             this, &QDialog::reject);
+
+    connect(applyRangeButton, &QPushButton::clicked,
+            this, &PumpingRatesDlg::applyRangeButtonClicked);
+
+    connect(applyAveragingButton, &QPushButton::clicked,
+            this, &PumpingRatesDlg::applyAveragingButtonClicked);
+
+    connect(applyErrorCodeButton, &QPushButton::clicked,
+            this, &PumpingRatesDlg::applyErrorCodeButtonClicked);
 }
 
 void PumpingRatesDlg::initTables()
 {
     rawTable = new AWFMTableWidget(0, 2, QStringList() << "t" << "Q");
+    rawTable->horizontalHeader()->setStretchLastSection(true);
 
     connect(rawTable, SIGNAL(importSelected()),
             this, SLOT(import()));
@@ -102,7 +113,7 @@ void PumpingRatesDlg::initLayout()
     QVBoxLayout *rightLayout = new QVBoxLayout();
 
     leftLayout->addWidget(rawTable);
-    rawTable->setMinimumWidth(250);
+    rawTable->setMinimumWidth(350);
     leftLayout->addWidget(recordCountLabel);
 
     QHBoxLayout *applyToAllWellsLayout = new QHBoxLayout();
@@ -175,7 +186,6 @@ void PumpingRatesDlg::initLayout()
     averageByToleranceLayout->addWidget(averageByToleranceRadio);
     averageByToleranceLayout->addWidget(averageToleranceLineEdit);
     QVBoxLayout *averagingLayout = new QVBoxLayout();
-    averagingLayout->addWidget(noAveragingRadio);
     averagingLayout->addWidget(averageBySignRadio);
     averagingLayout->addLayout(averageByToleranceLayout);
 
@@ -221,6 +231,85 @@ void PumpingRatesDlg::fillTableWithPumpingRates()
 void PumpingRatesDlg::setRecordCount(int records)
 {
     recordCountLabel->setText(QString("%1 records").arg(records));
+}
+
+void PumpingRatesDlg::applyAveragingButtonClicked()
+{
+    QString selected_well_name = wellsComboBox->currentText();
+    for (size_t i = 0; i < wells_.size(); i++) {
+        if (averageBySignRadio->isChecked()) {
+            if (applyToAllWellsCheckBox->isChecked()
+                    || wells_[i].name() == selected_well_name) {
+                awfm::Timeseries q = wells_[i].q();
+                q.averageBySign();
+                wells_[i].setQ(q);
+            }
+        }
+    }
+
+    fillTableWithPumpingRates();
+}
+
+void PumpingRatesDlg::applyErrorCodeButtonClicked()
+{
+    if (errorCodeLineEdit->text().isEmpty()) {
+        return;
+    }
+    double error_code = errorCodeLineEdit->text().toDouble();
+    QString on_error_text = onErrorComboBox->currentText();
+
+    QString selected_well_name = wellsComboBox->currentText();
+    for (size_t i = 0; i < wells_.size(); i++) {
+        if (applyToAllWellsCheckBox->isChecked()
+                || wells_[i].name()==selected_well_name) {
+            awfm::Timeseries q = wells_[i].q();
+            if (on_error_text == "Linear Interpolate") {
+                q.interpolateOverValue(error_code);
+            } else if (on_error_text == "Remove") {
+                q.removeByValue(error_code);
+            } else {
+                // This line should not be reached.
+            }
+            wells_[i].setQ(q);
+        }
+    }
+    fillTableWithPumpingRates();
+}
+
+void PumpingRatesDlg::applyRangeButtonClicked()
+{
+    QString selected_well_name = wellsComboBox->currentText();
+    for (size_t i = 0; i < wells_.size(); i++) {
+        if (!minValueLineEdit->text().isEmpty()) {
+            double min_value = minValueLineEdit->text().toDouble();
+            if (applyToAllWellsCheckBox->isChecked()
+                || wells_[i].name() == selected_well_name) {
+                awfm::Timeseries q = wells_[i].q();
+                q.setMinValue(min_value);
+                wells_[i].setQ(q);
+            }
+        }
+        if (!maxValueLineEdit->text().isEmpty()) {
+            double max_value = maxValueLineEdit->text().toDouble();
+            if (applyToAllWellsCheckBox->isChecked()
+                || wells_[i].name() == selected_well_name) {
+                awfm::Timeseries q = wells_[i].q();
+                q.setMaxValue(max_value);
+                wells_[i].setQ(q);
+            }
+        }
+        if (!minMagnitudeLineEdit->text().isEmpty()) {
+            double min_magnitude = minMagnitudeLineEdit->text().toDouble();
+            if (applyToAllWellsCheckBox->isChecked()
+                || wells_[i].name() == selected_well_name) {
+                awfm::Timeseries q = wells_[i].q();
+                q.setMinMagnitude(min_magnitude);
+                wells_[i].setQ(q);
+            }
+        }
+    }
+    fillTableWithPumpingRates();
+
 }
 
 void PumpingRatesDlg::cellChanged(QTableWidgetItem *item)
