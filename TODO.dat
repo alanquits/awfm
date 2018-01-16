@@ -6,6 +6,7 @@ Application-Wide
 - add recent files in file dialog
 - restrict line edits to numbers only where they can only be numbers
 - add start date option in settings
+- save model if dirty on exit
 
 Edit Wells Dialog
 - fix precision

@@ -70,6 +70,7 @@ MainWindow::MainWindow()
 {
     createActions();
     createMenus();
+    initWidgets();
     setDirty(false);
     setModelLoaded(false);
 
@@ -161,6 +162,16 @@ void MainWindow::createMenus()
     pestMenu->addSeparator();
     pestMenu->addAction(runPestAct);
     menuBar()->addMenu(pestMenu);
+
+
+}
+
+void MainWindow::initWidgets()
+{
+    viewTimeseriesWidget = new ViewTimeseriesWidget();
+    setCentralWidget(viewTimeseriesWidget);
+    connect(this, SIGNAL(modelChanged()),
+            viewTimeseriesWidget, SLOT(drawChart()));
 }
 
 bool MainWindow::okToProceed()
@@ -198,10 +209,12 @@ void MainWindow::setModelLoaded(bool loaded)
     modelMenu->setEnabled(loaded);
     pestMenu->setEnabled(loaded);
     saveAsAct->setEnabled(loaded);
+    viewTimeseriesWidget->setModel(&model_);
     modelLoaded_ = loaded;
     if (!loaded) {
         modelFileName_ = "";
     }
+    emit modelChanged();
 }
 
 void MainWindow::newFile()
@@ -230,7 +243,9 @@ void MainWindow::editAquiferDrawdownMethod()
             //model_.setAquiferDrawdownModel(awfm::HantushJacob(S, T, mpOverKp); // TODO
         }
         setDirty(true);
+        emit modelChanged();
     }
+
 }
 
 void MainWindow::editWells()
@@ -239,6 +254,8 @@ void MainWindow::editWells()
     if (dlg.exec()) {
         model_.setWells(dlg.wells());
         setDirty(true);
+        viewTimeseriesWidget->setModel(&model_);
+        emit modelChanged();
     }
 
 }
@@ -249,6 +266,7 @@ void MainWindow::editPumpingRates()
     if (dlg.exec()) {
         model_.setWells(dlg.wells());
         setDirty(true);
+        emit modelChanged();
     }
 }
 

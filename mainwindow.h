@@ -53,6 +53,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include "model.h"
+#include "viewtimeserieswidget.h"
 
 class MainWindow : public QMainWindow
 {
@@ -75,9 +76,11 @@ public:
 private:
     void createActions();
     void createMenus();
+    void initWidgets();
     bool okToProceed();
     void setDirty(bool);
     void setModelLoaded(bool);
+
 
     bool isDirty_;
     bool modelLoaded_;
@@ -87,6 +90,9 @@ private:
     QMenu *fileMenu;
     QMenu *modelMenu;
     QMenu *pestMenu;
+
+    // Central widgets
+    ViewTimeseriesWidget *viewTimeseriesWidget;
 
     // File menu actions
     QAction *newAct;
@@ -107,6 +113,9 @@ private:
     QAction *observedHeadAct;
     QAction *windowsAct;
     QAction *runPestAct;
+
+signals:
+    void modelChanged();
 };
 
 #endif

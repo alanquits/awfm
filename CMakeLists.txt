@@ -4,7 +4,9 @@ project(awfm C CXX Fortran)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
+
 find_package(Qt5Widgets)
+find_package(Qt5Charts REQUIRED)
 find_package(Qt5Sql REQUIRED)
 
 set(NAME_SOURCES
@@ -35,6 +37,7 @@ set(NAME_SOURCES
     utility.cpp
     slatec.f
     temporaldomain.cpp
+    viewtimeserieswidget.cpp
     timeseriesplotwidget.cpp
     xlsxdataframe.cpp
     resources/create_db.cpp
@@ -65,6 +68,7 @@ set(NAME_HEADERS measure.h
     timeseries.h
     mainwindow.h
     modelio.h
+    viewtimeserieswidget.h
     temporaldomain.h
     timeseriesplotwidget.h
     xlsxdataframe.h
@@ -78,4 +82,4 @@ INCLUDE_DIRECTORIES ("thirdparty/fast-cpp-csv-parser-master")
 include_directories ("thirdparty/xlnt/include")
 
 add_executable(${PROJECT_NAME} ${NAME_SOURCES} ${NAME_HEADERS})
-target_link_libraries(awfm Qt5::Widgets Qt5::Sql pthread sqlite3 xlnt)
+target_link_libraries(awfm Qt5::Widgets Qt5::Sql Qt5::Charts pthread sqlite3 xlnt)
