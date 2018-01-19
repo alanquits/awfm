@@ -62,6 +62,7 @@
 #include "pumpingratesdlg.h"
 #include "theis.h"
 #include "modelio.h"
+#include "welllossdlg.h"
 
 // ![0]
 
@@ -117,7 +118,7 @@ void MainWindow::createActions()
     connect(aquiferDrawdownAct, &QAction::triggered, this, &MainWindow::editAquiferDrawdownMethod);
 
     wellLossAct = new QAction(tr("Well &Loss"), this);
-    connect(wellLossAct, &QAction::triggered, this, &MainWindow::dummySlot);
+    connect(wellLossAct, &QAction::triggered, this, &MainWindow::editWellLoss);
 
     runModelAct = new QAction(tr("&Run"), this);
     connect(runModelAct, &QAction::triggered, this, &MainWindow::dummySlot);
@@ -258,6 +259,15 @@ void MainWindow::editWells()
         emit modelChanged();
     }
 
+}
+
+void MainWindow::editWellLoss()
+{
+    WellLossDlg dlg(&model_);
+    if (dlg.exec()) {
+        // accepted
+        emit modelChanged();
+    }
 }
 
 void MainWindow::editPumpingRates()

@@ -7,6 +7,8 @@ namespace awfm {
         modelType_ = JACOB;
         B_ = B;
         C_ = C;
+        dB_ = 0;
+        dC_ = 0;
     }
 
     double JacobWellLoss::drawdown(double Q)

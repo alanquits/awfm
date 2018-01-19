@@ -30,9 +30,9 @@ set(NAME_SOURCES
     editwellsdlg.cpp
     importdlg.cpp
     modelio.cpp
-    jacobwellloss.cpp
-    jacobsimplifiedwellloss.cpp
-    abstractwelllossmodel.cpp
+#    jacobwellloss.cpp
+#    jacobsimplifiedwellloss.cpp
+#    abstractwelllossmodel.cpp
     measure.cpp
     utility.cpp
     slatec.f
@@ -40,6 +40,7 @@ set(NAME_SOURCES
     viewtimeserieswidget.cpp
     timeseriesplotwidget.cpp
     xlsxdataframe.cpp
+    welllossdlg.cpp
     resources/create_db.cpp
 )
 
@@ -51,14 +52,14 @@ set(NAME_HEADERS measure.h
     sqlitedataframe.h
     abstractaquiferdrawdownmodel.h
     abstractdataframe.h
-    abstractwelllossmodel.h
+#    abstractwelllossmodel.h
     awfmtablewidget.h
     dbio.h
     definitions.h
     editwellsdlg.h
     importdlg.h
-    jacobwellloss.h
-    jacobsimplifiedwellloss.h
+#    jacobwellloss.h
+#    jacobsimplifiedwellloss.h
     model.h
     pumpingratesdlg.h
     utility.h
@@ -72,6 +73,7 @@ set(NAME_HEADERS measure.h
     temporaldomain.h
     timeseriesplotwidget.h
     xlsxdataframe.h
+    welllossdlg.h
     resources/create_db.h
 )
 

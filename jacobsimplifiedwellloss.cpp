@@ -5,6 +5,7 @@ namespace awfm {
     JacobSimplifiedWellLoss::JacobSimplifiedWellLoss(double C)
     {
         C_ = C;
+        dC_ = 0;
         modelType_ = SIMPLIFIEDJACOB;
     }
 

@@ -13,7 +13,11 @@ namespace awfm {
         y_ = y;
         rw_ = rw;
         h0_ = h0;
-        wellLossModel_ = new JacobSimplifiedWellLoss(0);
+        dh0_ = 0;
+        b_ = 0;
+        c_ = 0;
+        db_ = 0;
+        dc_ = 0;
     }
 
     void Well::setName(QString name)

@@ -13,6 +13,11 @@ namespace awfm {
         double y_;  // y coordinate
         double rw_; // well radius
         double h0_; // static water level
+        double dh0_; // change in static water level per year
+        double c_;   // well-loss due to turbulant flow
+        double dc_;  // change in C per year
+        double b_;   // well-loss due to laminar flow
+        double db_;  // change in B per year
 
         Timeseries wl_;    // observed water levels
         Timeseries q_;     // observed pumping
@@ -29,7 +34,12 @@ namespace awfm {
         double y() { return y_; }
         double rw() { return rw_; }
         double h0() { return h0_; }
-        AbstractWellLossModel *wellLossModel() { return wellLossModel_; }
+        double dh0() { return dh0_; }
+        double b() { return b_; }
+        double c() { return c_; }
+        double db() { return db_; }
+        double dc() { return dc_; }
+
         Timeseries wl() { return wl_; }
         Timeseries q() { return q_; }
         Timeseries dQ() { return dQ_; }

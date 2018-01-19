@@ -266,7 +266,7 @@ bool ModelIO::save(Model *model, QString file_path, QString *err_msg)
             double y = w.y();
             double rw = w.rw();
             double h0 = w.h0();
-            QString well_loss_model = w.wellLossModel()->modelTypeAsString();
+
 
 
             qry.prepare(
@@ -279,7 +279,7 @@ bool ModelIO::save(Model *model, QString file_path, QString *err_msg)
             qry.addBindValue(y);
             qry.addBindValue(rw);
             qry.addBindValue(h0);
-            qry.addBindValue(well_loss_model);
+            qry.addBindValue("jacob"); // TODO
             qry.exec();
 
 

@@ -63,6 +63,7 @@ public slots:
     void newFile();
     void editAquiferDrawdownMethod();
     void editWells();
+    void editWellLoss();
     void editPumpingRates();
     void openModel();
     void saveModel();

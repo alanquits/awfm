@@ -7,6 +7,8 @@ Application-Wide
 - restrict line edits to numbers only where they can only be numbers
 - add start date option in settings
 - save model if dirty on exit
+- delete unused source files
+- embed scripting language or develop console interface
 
 Edit Wells Dialog
 - fix precision
