@@ -34,7 +34,7 @@ void UnitsDlg::initWidgets()
 
     dischargeComboBox = new QComboBox();
     dischargeComboBox->addItems(
-        QStringList() << "m3/d" << "cfs" << "gpm");
+        QStringList() << "m3/day" << "ft3/sec" << "gal/min");
 
     lengthComboBox = new QComboBox();
     lengthComboBox->addItems(

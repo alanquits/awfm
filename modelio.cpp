@@ -35,14 +35,14 @@ bool ModelIO::load(Model *model, QString file_path, QString *err_msg)
 bool ModelIO::getTheisParameters(double &S, double &T, QString *err_msg)
 {
     QSqlQuery qry;
-    qry.prepare("select shortname, value "
+    qry.prepare("select name, value "
                 "from aquifer_drawdown_model_parameters ");
     while (qry.next()) {
-        QString shortname = qry.value(0).toString();
+        QString name = qry.value(0).toString();
         double value = qry.value(1).toDouble();
-        if (shortname == "S") {
+        if (name == "S") {
             S = value;
-        } else if (shortname == "T") {
+        } else if (name == "T") {
             T = value;
         }
     }
@@ -94,7 +94,7 @@ bool ModelIO::loadWells(Model *model, QString *err_msg)
     QList<Well> wells;
     QSqlQuery qry;
     qry.prepare(
-        "select name, x, y, rw, h0, well_loss_model "
+        "select name, x, y, rw, h0, dh0, b, db, c, dc "
         "from wells order by name");
     qry.exec();
     while (qry.next()) {
@@ -103,9 +103,18 @@ bool ModelIO::loadWells(Model *model, QString *err_msg)
         double y = qry.value(2).toDouble();
         double rw = qry.value(3).toDouble();
         double h0 = qry.value(4).toDouble();
-        QString well_loss_model = qry.value(5).toString();
-        wells.append(Well(name, x, y, rw, h0));
-        // TODO get well loss model
+        double dh0 = qry.value(5).toDouble();
+        double b = qry.value(6).toDouble();
+        double db = qry.value(7).toDouble();
+        double c = qry.value(8).toDouble();
+        double dc = qry.value(9).toDouble();
+        Well w = Well(name, x, y, rw, h0);
+        w.setDeltaH0(dh0);
+        w.setB(b);
+        w.setDeltaB(db);
+        w.setC(c);
+        w.setDeltaC(dc);
+        wells.append(w);
     }
 
     if (qry.lastError().isValid()) {
@@ -186,12 +195,25 @@ bool ModelIO::save(Model *model, QString file_path, QString *err_msg)
         { return false; }
 
         if (!setStaticVar("settings", "length_unit",
-                          awfm::Utility::unitAsString(model->dischargeUnit()), err_msg))
+            awfm::Utility::unitAsString(model->dischargeUnit()), err_msg))
         { return false; }
 
         if (!setStaticVar("settings", "aquifer_drawdown_model",
             model->aquiferDrawdownModel()->modelTypeAsString(), err_msg))
         { return false; }
+
+        QStringList options = QStringList()
+                << "well_loss_turbulant_on"
+                << "well_loss_laminar_on"
+                << "well_loss_transient_on"
+                << "h0_transient_on";
+
+        foreach(QString option, options) {
+            if(!setStaticVar("settings", "well_loss_turbulant_on",
+                             model->isOptionOn(option), err_msg)) {
+                return false;
+            }
+        }
 
 
         // write aquifer model parameters
@@ -235,13 +257,30 @@ bool ModelIO::save(Model *model, QString file_path, QString *err_msg)
         return true;
     }
 
+    bool ModelIO::setStaticVar(QString table_name, QString field_name,
+                               bool value, QString *err_msg)
+    {
+        QSqlQuery qry;
+        qry.prepare(QString("update %1 set %2=?")
+                    .arg(table_name).arg(field_name));
+        qry.addBindValue(value);
+        qry.exec();
+
+        if (qry.lastError().isValid()) {
+            *err_msg = QString("Sql Error: %1").arg(qry.lastError().text());
+            return false;
+        }
+
+        return true;
+    }
+
     bool ModelIO::setAquiferDrawdownParameter(QString shortname, double value, QString *err_msg)
     {
         QSqlQuery qry;
         qry.prepare(
             QString("update aquifer_drawdown_model_parameters "
                     "set value=? "
-                    "where shortname='%1'").arg(shortname));
+                    "where name='%1'").arg(shortname));
         qry.addBindValue(value);
         qry.exec();
 
@@ -261,25 +300,21 @@ bool ModelIO::save(Model *model, QString file_path, QString *err_msg)
 
 
         foreach(Well w, ws) {
-            QString name = w.name();
-            double x = w.x();
-            double y = w.y();
-            double rw = w.rw();
-            double h0 = w.h0();
-
-
-
             qry.prepare(
                 "insert into wells "
-                "(name, x, y, rw, h0, well_loss_model) "
+                "(name, x, y, rw, h0, dh0, b, db, c, dc) "
                 "values"
-                "(?, ?, ?, ?, ?, ?)");
-            qry.addBindValue(name);
-            qry.addBindValue(x);
-            qry.addBindValue(y);
-            qry.addBindValue(rw);
-            qry.addBindValue(h0);
-            qry.addBindValue("jacob"); // TODO
+                "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            qry.addBindValue(w.name());
+            qry.addBindValue(w.x());
+            qry.addBindValue(w.y());
+            qry.addBindValue(w.rw());
+            qry.addBindValue(w.h0());
+            qry.addBindValue(w.dh0());
+            qry.addBindValue(w.b());
+            qry.addBindValue(w.db());
+            qry.addBindValue(w.c());
+            qry.addBindValue(w.dc());
             qry.exec();
 
 

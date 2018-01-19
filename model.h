@@ -27,6 +27,7 @@ namespace awfm {
     LengthUnit lengthUnit() { return lengthUnit_; }
     TimeUnit timeUnit() { return timeUnit_; }
     DischargeUnit dischargeUnit() { return dischargeUnit_; }
+    bool isOptionOn(QString option);
 
     void setAquiferDrawdownModel(AbstractAquiferDrawdownModel*);
     void setWells(QList<Well> wells);

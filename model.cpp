@@ -21,10 +21,19 @@ namespace awfm {
         dischargeUnit_ = M3D;
         wells_.push_back(awfm::Well("Well 1", 0, 0, 1, 0));
 
-        options_["transient h0"] = false;
-        options_["turbulant well-loss"] = false;
-        options_["laminar well-loss"] = false;
-        options_["transient well-loss"] = false;
+        options_["h0_transient_on"] = false;
+        options_["well_loss_turbulant_on"] = false;
+        options_["well_loss_laminar_on"] = false;
+        options_["well_loss_transient_on"] = false;
+    }
+
+    bool Model::isOptionOn(QString option)
+    {
+        if (options_.keys().contains(option)) {
+            return options_[option];
+        } else {
+            return false;
+        }
     }
 
     void Model::setAquiferDrawdownModel(AbstractAquiferDrawdownModel *m)
