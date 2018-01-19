@@ -17,6 +17,7 @@ namespace awfm {
     TimeUnit timeUnit_;
     DischargeUnit dischargeUnit_;
     QList<Well> wells_;
+    QMap<QString, bool> options_;
     TemporalDomain temporalDomain_;
 
     public:

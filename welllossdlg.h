@@ -20,6 +20,7 @@ private:
     AWFMTableWidget *table;
     QCheckBox *wellLossLaminarCheckBox;   // B
     QCheckBox *wellLossTurbulantCheckBox; // C
+    QCheckBox *transientCheckBox;
 
 
     void initLayout();

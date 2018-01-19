@@ -51,6 +51,15 @@ namespace awfm {
         void setY(double y);
         void setRw(double rw);
         void setH0(double h0);
+        void setB(double b);
+        void setDeltaB(double db);
+        void setC(double c);
+        void setDeltaC(double dc);
+        void setDeltaH0(double dh0);
+
+        void setOption(QString option_name, bool v);
+
+
         void setWl(Timeseries wl) { wl_ = wl; }
         void setQ(Timeseries q);
         void setSAq(Timeseries sAq) { sAq_ = sAq; }

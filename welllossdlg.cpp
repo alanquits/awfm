@@ -48,6 +48,15 @@ void WellLossDlg::fillTable()
                 new QTableWidgetItem(QString("%1").arg(wells_[i].dc()));
         table->setItem(i, 4, dc_twi);
 
+        if(!transientCheckBox->isChecked()) {
+            db_twi->setText("0");
+            db_twi->setTextColor(background_color);
+            db_twi->setFlags(b_twi->flags() &  ~Qt::ItemIsEditable);
+            dc_twi->setText("0");
+            dc_twi->setTextColor(background_color);
+            dc_twi->setFlags(dc_twi->flags() &  ~Qt::ItemIsEditable);
+        }
+
         if (!wellLossLaminarCheckBox->isChecked()) {
             b_twi->setText("0");
             b_twi->setTextColor(background_color);
@@ -73,6 +82,8 @@ void WellLossDlg::initLayout()
     QHBoxLayout *topLayout = new QHBoxLayout();
     topLayout->addWidget(wellLossLaminarCheckBox);
     topLayout->addWidget(wellLossTurbulantCheckBox);
+    topLayout->addStretch();
+    topLayout->addWidget(transientCheckBox);
 
     QVBoxLayout *mainLayout = new QVBoxLayout();
     mainLayout->addLayout(topLayout);
@@ -86,6 +97,7 @@ void WellLossDlg::initWidgets()
 {
     wellLossLaminarCheckBox = new QCheckBox("Laminar Well Loss (B)");
     wellLossTurbulantCheckBox = new QCheckBox("Turbulant Well Loss (C)");
+    transientCheckBox = new QCheckBox("Transient");
     table = new AWFMTableWidget(wells_.length(), 5,
         QStringList() << "Well"
                       << "B" << "dB/year"
@@ -104,6 +116,9 @@ void WellLossDlg::initWidgets()
             this, &WellLossDlg::fillTable);
 
     connect(wellLossTurbulantCheckBox, &QCheckBox::stateChanged,
+            this, &WellLossDlg::fillTable);
+
+    connect(transientCheckBox, &QCheckBox::stateChanged,
             this, &WellLossDlg::fillTable);
 
 }

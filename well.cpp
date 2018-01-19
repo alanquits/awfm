@@ -45,6 +45,31 @@ namespace awfm {
         h0_ = h0;
     }
 
+    void Well::setB(double b)
+    {
+        b_ = b;
+    }
+
+    void Well::setDeltaB(double db)
+    {
+        db_ = db;
+    }
+
+    void Well::setC(double c)
+    {
+        c_ = c;
+    }
+
+    void Well::setDeltaC(double dc)
+    {
+        dc_ = dc;
+    }
+
+    void Well::setDeltaH0(double dh0)
+    {
+        dh0_ = dh0;
+    }
+
     void Well::setQ(Timeseries q)
     {
         q_ = q;

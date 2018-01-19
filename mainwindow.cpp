@@ -62,6 +62,7 @@
 #include "pumpingratesdlg.h"
 #include "theis.h"
 #include "modelio.h"
+#include "unitsdlg.h"
 #include "welllossdlg.h"
 
 // ![0]
@@ -108,10 +109,13 @@ void MainWindow::createActions()
     exitAct->setShortcuts(QKeySequence::Quit);
     connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 
-    wellsAct = new QAction(tr("Edit &Wells"), this);
+    unitsAct = new QAction(tr("&Units"), this);
+    connect(unitsAct, &QAction::triggered, this, &MainWindow::editUnits);
+
+    wellsAct = new QAction(tr("&Wells"), this);
     connect(wellsAct, &QAction::triggered, this, &MainWindow::editWells);
 
-    pumpingRatesAct = new QAction(tr("Edit &Pumping Rates"), this);
+    pumpingRatesAct = new QAction(tr("&Pumping Rates"), this);
     connect(pumpingRatesAct, &QAction::triggered, this, &MainWindow::editPumpingRates);
 
     aquiferDrawdownAct = new QAction(tr("&Aquifer Drawdown"), this);
@@ -148,6 +152,7 @@ void MainWindow::createMenus()
     menuBar()->addMenu(fileMenu);
 
     modelMenu = new QMenu(tr("&Model"), this);
+    modelMenu->addAction(unitsAct);
     modelMenu->addAction(wellsAct);
     modelMenu->addAction(pumpingRatesAct);
     modelMenu->addAction(aquiferDrawdownAct);
@@ -247,6 +252,15 @@ void MainWindow::editAquiferDrawdownMethod()
         emit modelChanged();
     }
 
+}
+
+void MainWindow::editUnits()
+{
+    UnitsDlg dlg(&model_);
+    if (dlg.exec()) {
+        // accepted
+        emit modelChanged();
+    }
 }
 
 void MainWindow::editWells()

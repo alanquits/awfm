@@ -40,6 +40,7 @@ set(NAME_SOURCES
     viewtimeserieswidget.cpp
     timeseriesplotwidget.cpp
     xlsxdataframe.cpp
+    unitsdlg.cpp
     welllossdlg.cpp
     resources/create_db.cpp
 )
@@ -73,6 +74,7 @@ set(NAME_HEADERS measure.h
     temporaldomain.h
     timeseriesplotwidget.h
     xlsxdataframe.h
+    unitsdlg.h
     welllossdlg.h
     resources/create_db.h
 )

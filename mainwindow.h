@@ -62,6 +62,7 @@ class MainWindow : public QMainWindow
 public slots:
     void newFile();
     void editAquiferDrawdownMethod();
+    void editUnits();
     void editWells();
     void editWellLoss();
     void editPumpingRates();
@@ -103,6 +104,7 @@ private:
     QAction *exitAct;
 
     // Model menu actions
+    QAction *unitsAct;
     QAction *wellsAct;
     QAction *pumpingRatesAct;
     QAction *aquiferDrawdownAct;

@@ -68,6 +68,9 @@ QString CREATE_DB_DEFINITION =
     "  , time_unit text references fk_time_units (time_unit)"
     "  , discharge_unit text references fk_discharge_units (discharge_unit)"
     "  , aquifer_drawdown_model text references fk_aquifer_drawdown_models (aquifer_drawdown_model)"
+    "  , laminar_well_loss bool default false"
+    "  , turbulant_well_loss bool default false"
+    "  , transient_well_loss default false"
     ");"
 
     "create table wells ("
