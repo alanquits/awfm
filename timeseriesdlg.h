@@ -1,5 +1,5 @@
-#ifndef PUMPINGRATESDLG_H
-#define PUMPINGRATESDLG_H
+#ifndef TIMESERIESDLG_H
+#define TIMESERIESDLG_H
 
 #include "awfmtablewidget.h"
 #include "model.h"
@@ -19,12 +19,15 @@ class QCheckBox;
 class QPushButton;
 class QWidget;
 
-class PumpingRatesDlg : public QDialog {
+class TimeseriesDlg : public QDialog {
     Q_OBJECT
 private:
     AWFMTableWidget *rawTable;
     QLabel *recordCountLabel;
-    QList<awfm::Well> wells_; // A local copy of wells list to modify
+
+    QStringList wellNames_;
+    QList<awfm::Timeseries> timeseriesList_;
+    QString valueTableHeader_;
 
     QLabel *methodLabel;
     QComboBox *methodComboBox;
@@ -62,33 +65,50 @@ private:
     QRadioButton *averageBySignRadio;
     QPushButton *applyAveragingButton;
 
+    QLabel *scaleTLabel;
+    QLineEdit *scaleTLineEdit;
+    QLabel *scaleVLabel;
+    QLineEdit *scaleVLineEdit;
+    QPushButton *scaleApplyButton;
+
+    QLabel *translateTLabel;
+    QLineEdit *translateTLineEdit;
+    QLabel *translateVLabel;
+    QLineEdit *translateVLineEdit;
+    QPushButton *translateApplyButton;
+
     QDialogButtonBox *buttonBox;
 
 
 
 public:
-    PumpingRatesDlg(awfm::Model *model);
+    // Map<"WellName", Timeseries>
+    TimeseriesDlg(QStringList well_names, QList<awfm::Timeseries> time_series_s,
+                  QString window_title, QString value_table_header);
     void initWidgets();
     void initTables();
     void initMethodLayouts();
     void initLayout();
     void setRecordCount(int records);
-    QList<awfm::Well> wells() { return wells_; }
+    QList<awfm::Timeseries> timeseriesList() { return timeseriesList_; }
 
 public slots:
     void methodChanged();
     void applyAveragingButtonClicked();
     void applyErrorCodeButtonClicked();
     void applyRangeButtonClicked();
+    void applyProjectionButtonClicked();
+    void scaleButtonClicked();
+    void translateButtonClicked();
     void cellChanged(QTableWidgetItem *item);
     void import();
     void insertAbove(QList<int> selected_rows);
     void insertBelow(QList<int> selected_rows);
     void deleteRows(QList<int> selected_rows);
-    void fillTableWithPumpingRates();
+    void fillTable();
 };
 
 
 
 
-#endif // PUMPINGRATESDLG_H
+#endif // TIMESERIESDLG_H

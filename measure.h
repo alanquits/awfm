@@ -25,6 +25,10 @@ namespace awfm {
 
         void absolute();
         void scale(double s);
+        void scaleT(double s);
+        void scaleV(double s);
+        void translateT(double dt);
+        void translateV(double dv);
         void zeroBelow(double min_value);
     };
 }

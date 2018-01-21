@@ -1,6 +1,7 @@
 #ifndef UNITSDLG_H
 #define UNITSDLG_H
 
+#include "definitions.h"
 #include "model.h"
 
 #include <QDialog>
@@ -13,6 +14,8 @@ class UnitsDlg : public QDialog {
     Q_OBJECT
 
 private:
+
+
     QLabel *dischargeLabel;
     QLabel *lengthLabel;
     QLabel *timeLabel;
@@ -26,8 +29,14 @@ private:
     void initLayout();
     void initWidgets();
 
+
+
 public:
     UnitsDlg(awfm::Model *m);
+
+    awfm::DischargeUnit dischargeUnit();
+    awfm::LengthUnit lengthUnit();
+    awfm::TimeUnit timeUnit();
 };
 
 #endif

@@ -13,3 +13,6 @@ Application-Wide
 Edit Wells Dialog
 - fix precision
 - add verification that well names are unique
+
+Timeseries Dialog
+- edit boxes to look better

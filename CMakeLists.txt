@@ -22,7 +22,7 @@ set(NAME_SOURCES
 #    io.cpp
     well.cpp
     timeseries.cpp
-    pumpingratesdlg.cpp
+#    pumpingratesdlg.cpp
     specialfunctions.cpp
     abstractdataframe.cpp
     abstractaquiferdrawdownmodel.cpp
@@ -38,6 +38,7 @@ set(NAME_SOURCES
     slatec.f
     temporaldomain.cpp
     viewtimeserieswidget.cpp
+    timeseriesdlg.cpp
     timeseriesplotwidget.cpp
     xlsxdataframe.cpp
     unitsdlg.cpp
@@ -62,12 +63,13 @@ set(NAME_HEADERS measure.h
 #    jacobwellloss.h
 #    jacobsimplifiedwellloss.h
     model.h
-    pumpingratesdlg.h
+#    pumpingratesdlg.h
     utility.h
     theis.h
     well.h
 #    testing.h
     timeseries.h
+    timeseriesdlg.h
     mainwindow.h
     modelio.h
     viewtimeserieswidget.h

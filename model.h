@@ -29,6 +29,7 @@ namespace awfm {
     DischargeUnit dischargeUnit() { return dischargeUnit_; }
     bool isOptionOn(QString option);
 
+    void setOption(QString option, bool is_on);
     void setAquiferDrawdownModel(AbstractAquiferDrawdownModel*);
     void setWells(QList<Well> wells);
     void setTemporalDomain(TemporalDomain td);

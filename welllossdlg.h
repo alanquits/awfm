@@ -25,12 +25,16 @@ private:
 
     void initLayout();
     void initWidgets();
+    void setColumnEditable(int column_idx, bool editable);
 
 public:
     WellLossDlg(awfm::Model *model);
 
 public slots:
+    QList< QMap<QString, double> > tableData();
+    QMap<QString, bool> getOptions();
     void fillTable();
+    void optionsToggled();
 
 };
 

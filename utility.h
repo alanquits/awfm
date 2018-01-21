@@ -28,6 +28,7 @@ namespace awfm {
         static DischargeUnit dischargeUnitFromString(QString str);
         //static AquiferDrawdownModel aquiferDrawdownModelFromString(QString str);
         static bool fileExists(QString);
+
     };
 }
 

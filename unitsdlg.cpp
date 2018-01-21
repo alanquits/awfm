@@ -54,8 +54,44 @@ void UnitsDlg::initWidgets()
             this, &QDialog::reject);
 }
 
+awfm::DischargeUnit UnitsDlg::dischargeUnit()
+{
+    QMap<QString, awfm::DischargeUnit> m;
+    m["m3/day"] = awfm::M3D;
+    m["ft3/sec"] = awfm::CFS;
+    m["gal/min"] = awfm::GPM;
+    return m[dischargeComboBox->currentText()];
+}
+
+awfm::LengthUnit UnitsDlg::lengthUnit()
+{
+    QMap<QString, awfm::LengthUnit> m;
+    m["meters"] = awfm::METERS;
+    m["yards"] = awfm::YARDS;
+    m["feet"] = awfm::FEET;
+    return m[lengthComboBox->currentText()];
+}
+
+awfm::TimeUnit UnitsDlg::timeUnit()
+{
+    QMap<QString, awfm::TimeUnit> m;
+    m["days"] = awfm::DAYS;
+    m["hours"] = awfm::HOURS;
+    m["minutes"] = awfm::MINUTES;
+    m["seconds"] = awfm::SECONDS;
+    return m[timeComboBox->currentText()];
+}
+
 UnitsDlg::UnitsDlg(awfm::Model *m)
 {
     initWidgets();
     initLayout();
+    dischargeComboBox->setCurrentText(
+                awfm::Utility::unitAsString(m->dischargeUnit()));
+    lengthComboBox->setCurrentText(
+                awfm::Utility::unitAsString(m->lengthUnit()));
+    timeComboBox->setCurrentText(
+                awfm::Utility::unitAsString(m->timeUnit()));
+
+
 }

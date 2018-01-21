@@ -66,6 +66,7 @@ public slots:
     void editWells();
     void editWellLoss();
     void editPumpingRates();
+    void editObservedHeads();
     void openModel();
     void saveModel();
     void saveModelAs();

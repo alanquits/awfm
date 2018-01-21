@@ -1,5 +1,7 @@
 #include "viewtimeserieswidget.h"
 
+#include <cmath>
+
 #include <QtCharts/QChart>
 #include <QtCharts/QChartView>
 #include <QtCharts/QLineSeries>
@@ -19,6 +21,39 @@ ViewTimeseriesWidget::ViewTimeseriesWidget()
 {
     initWidgets();
     initLayout();
+}
+
+void ViewTimeseriesWidget::axisExtent(double min_v, double max_v, double &axis_min, double &axis_max, int &axis_ticks)
+{
+    double dv = max_v - min_v;
+    if (dv == 0) {
+        axis_min = min_v - min_v*0.1;
+        axis_max = max_v + max_v*0.1;
+        axis_ticks = 3;
+        return;
+    }
+
+    double exp = floor(log10(dv));
+    double multiplier = pow(10, exp);
+    axis_min = roundToNearest(min_v, multiplier);
+    axis_max = roundToNearest(max_v, multiplier);
+    if (axis_max < max_v) {
+        axis_max += multiplier;
+    }
+
+    double new_dv = axis_max - axis_min;
+    int ticks = new_dv/multiplier;
+
+    if (ticks < 4) {
+        ticks *= 2;
+    }
+
+    axis_ticks = ticks+1;
+}
+
+double ViewTimeseriesWidget::roundToNearest(double n, double exp)
+{
+    return round(n/exp) * exp;
 }
 
 void ViewTimeseriesWidget::initWidgets()
@@ -87,6 +122,53 @@ void ViewTimeseriesWidget::setModel(awfm::Model *m)
 
 }
 
+void ViewTimeseriesWidget::wellTimeRange(awfm::Well *w, double &min_t, double &max_t)
+{
+    QList<awfm::Timeseries> timeseries_list;
+    timeseries_list.append(w->q());
+    timeseries_list.append(w->wl());
+    bool no_timeseries_length = true;
+    bool first = true;
+    foreach (awfm::Timeseries ts, timeseries_list) {
+        if (ts.size() > 0) {
+            no_timeseries_length = false;
+            if (first) {
+                min_t = ts.minT();
+                max_t = ts.maxT();
+                first = false;
+            } else {
+                min_t = fmin(min_t, ts.minT());
+                max_t = fmax(max_t, ts.maxT());
+            }
+        }
+    }
+
+    if (no_timeseries_length) {
+        min_t = 0;
+        max_t = 0;
+    }
+}
+
+void ViewTimeseriesWidget::pumpingSeries(QLineSeries *series,
+    QLineSeries *zero_series, awfm::Timeseries q)
+{
+    bool first = true;
+    for (size_t i = 0; i < q.size(); i++) {
+        double t = q.t(i);
+        double v = q.v(i);
+        if (first) {
+            series->append(t, 0);
+            series->append(t, v);
+            first = false;
+        } else {
+            double prev_v = q.v(i-1);
+            series->append(t, prev_v);
+            series->append(t, v);
+        }
+        zero_series->append(t, 0);
+    }
+}
+
 int ViewTimeseriesWidget::wellIndex()
 {
     return wellList->currentRow();
@@ -94,47 +176,118 @@ int ViewTimeseriesWidget::wellIndex()
 
 void ViewTimeseriesWidget::drawChart()
 {
+    bool chart_is_available = false;
     int idx = wellIndex();
     if (idx == -1) {
         return;
     }
+
+    QValueAxis *xAxis = new QValueAxis();
+    QValueAxis *yAxis1 = new QValueAxis();
+    QValueAxis *yAxis2 = new QValueAxis();
+
     awfm::Well *w = model->wellRef(idx);
     QChart *chart = new QChart();
+
+    double min_t, max_t;
+    double x_axis_min, x_axis_max;
+    int x_tick_count;
+    wellTimeRange(w, min_t, max_t);
+    axisExtent(min_t, max_t, x_axis_min, x_axis_max,
+               x_tick_count);
+    xAxis->setRange(x_axis_min, x_axis_max);
+    xAxis->setTickCount(x_tick_count);
+    chart->addAxis(xAxis, Qt::AlignBottom);
+
+
     if (observedPumpingRatesCheckBox->isEnabled() && observedPumpingRatesCheckBox->isChecked()) {
-        QLineSeries *series = new QLineSeries();
-        QLineSeries *zeroSeries = new QLineSeries();
-        awfm::Timeseries q = w->q();
-        bool first = true;
-        for (size_t i = 0; i < q.size(); i++) {
-            double t = q.t(i);
-            double v = q.v(i);
-            if (first) {
-                series->append(t, 0);
-                series->append(t, v);
-                first = false;
-            } else {
-                double prev_v = q.v(i-1);
-                series->append(t, prev_v);
-                series->append(t, v);
-            }
-            zeroSeries->append(t, 0);
+        chart_is_available = true;
+
+        awfm::Timeseries q_abs = w->q();
+        q_abs.absolute();
+        if (q_abs.size() > 0) {
+            double axis_min, axis_max;
+            int ticks;
+            axisExtent(q_abs.minV(), q_abs.maxV(), axis_min,
+                       axis_max, ticks);
+            yAxis1->setRange(axis_min, axis_max);
+            yAxis1->setTickCount(ticks);
+            chart->addAxis(yAxis1, Qt::AlignLeft);
         }
 
+        QLineSeries *pos_series = new QLineSeries();
+        QLineSeries *pos_zero_series = new QLineSeries();
+        QLineSeries *neg_series = new QLineSeries();
+        QLineSeries *neg_zero_series = new QLineSeries();
+
+        awfm::Timeseries q_neg = w->q();
+        q_neg.setMaxValue(0);
+        q_neg.scale(-1.0);
+
+        awfm::Timeseries q_pos = w->q();
+        q_pos.setMinValue(0);
+
+        pumpingSeries(pos_series, pos_zero_series, q_pos);
+        pumpingSeries(neg_series, neg_zero_series, q_neg);
+
+        QAreaSeries *pos_area_series = new QAreaSeries(pos_series, pos_zero_series);
+        pos_area_series->setName("Pumping Rates");
+        pos_area_series->setColor(QColor(160, 160, 160));
+        chart->addSeries(pos_area_series);
+        pos_area_series->attachAxis(xAxis);
+        pos_area_series->attachAxis(yAxis1);
+
+        QAreaSeries *neg_area_series = new QAreaSeries(neg_series, neg_zero_series);
+        neg_area_series->setName("Injection Rates");
+        neg_area_series->setColor(QColor(255, 0, 0));
+        chart->addSeries(neg_area_series);
+        neg_area_series->attachAxis(xAxis);
+        neg_area_series->attachAxis(yAxis1);
 
 
-
-        QAreaSeries *areaSeries = new QAreaSeries(series, zeroSeries);
-        areaSeries->setName("Pumping Rates");
-        areaSeries->setColor(QColor(160, 160, 160));
-        chart->addSeries(areaSeries);
-        chart->createDefaultAxes();
-        chartView->setChart(chart);
     }
 
-    chart->setTitle(w->name());
-    chart->legend()->setAlignment(Qt::AlignBottom);
+    if (observedWaterLevelsCheckBox->isEnabled()
+        && observedWaterLevelsCheckBox->isChecked()) {
+        chart_is_available = true;
+        awfm::Timeseries wl = w->wl();
+        QLineSeries *wl_series = new QLineSeries();
+
+        if (wl.size() > 0) {
+            double wl_axis_min, wl_axis_max;
+            int wl_axis_ticks;
+            axisExtent(wl.min(), wl.max(), wl_axis_min, wl_axis_max,
+                       wl_axis_ticks);
+            yAxis2->setRange(wl_axis_min, wl_axis_max);
+            yAxis2->setTickCount(wl_axis_ticks);
+            chart->addAxis(yAxis2, Qt::AlignRight);
+        }
+
+        for (int i = 0; i < wl.size(); i++) {
+            wl_series->append(wl.t(i), wl.v(i));
+        }
+        chart->addSeries(wl_series);
+        wl_series->setName("Water Level");
+        wl_series->attachAxis(xAxis);
+        wl_series->attachAxis(yAxis2);
 
 
+
+
+    }
+
+    if (chart_is_available) {
+        chart->setTitle(w->name());
+        chart->legend()->setAlignment(Qt::AlignBottom);
+
+        xAxis->setTitleText("Time (unit)");
+        yAxis1->setTitleText("Flow (unit)");
+        yAxis2->setTitleText("Water Level (unit)");
+
+
+    }
+
+    chartView->setChart(chart);
 }
 
 void ViewTimeseriesWidget::wellSelectionChanged(int idx)

@@ -59,7 +59,7 @@
 #include "mainwindow.h"
 #include "aquiferdrawdowndlg.h"
 #include "editwellsdlg.h"
-#include "pumpingratesdlg.h"
+#include "timeseriesdlg.h"
 #include "theis.h"
 #include "modelio.h"
 #include "unitsdlg.h"
@@ -131,7 +131,7 @@ void MainWindow::createActions()
     connect(pestSettingsAct, &QAction::triggered, this, &MainWindow::dummySlot);
 
     observedHeadAct = new QAction(tr("Observed &Heads"), this);
-    connect(observedHeadAct, &QAction::triggered, this, &MainWindow::dummySlot);
+    connect(observedHeadAct, &QAction::triggered, this, &MainWindow::editObservedHeads);
 
     windowsAct = new QAction(tr("&Windows"), this);
     connect(windowsAct, &QAction::triggered, this, &MainWindow::dummySlot);
@@ -161,7 +161,7 @@ void MainWindow::createMenus()
     modelMenu->addAction(runModelAct);
     menuBar()->addMenu(modelMenu);
 
-    pestMenu = new QMenu(tr("&PEST"), this);
+    pestMenu = new QMenu(tr("&Parameter Estimation"), this);
     pestMenu->addAction(pestSettingsAct);
     pestMenu->addAction(observedHeadAct);
     pestMenu->addAction(windowsAct);
@@ -258,7 +258,9 @@ void MainWindow::editUnits()
 {
     UnitsDlg dlg(&model_);
     if (dlg.exec()) {
-        // accepted
+        model_.setDischargeUnit(dlg.dischargeUnit());
+        model_.setLengthUnit(dlg.lengthUnit());
+        model_.setTimeUnit(dlg.timeUnit());
         emit modelChanged();
     }
 }
@@ -279,18 +281,71 @@ void MainWindow::editWellLoss()
 {
     WellLossDlg dlg(&model_);
     if (dlg.exec()) {
-        // accepted
+        QList< QMap<QString, double> > data = dlg.tableData();
+        for (int i = 0; i < data.size(); i++) {
+            model_.wellRef(i)->setB(data[i]["b"]);
+            model_.wellRef(i)->setC(data[i]["c"]);
+            model_.wellRef(i)->setDeltaB(data[i]["db"]);
+            model_.wellRef(i)->setDeltaC(data[i]["dc"]);
+        }
+
+        QMap<QString, bool> options = dlg.getOptions();
+        foreach(QString key, options.keys()) {
+            model_.setOption(key, options[key]);
+        }
         emit modelChanged();
     }
 }
 
 void MainWindow::editPumpingRates()
 {
-    PumpingRatesDlg dlg(&model_);
+    QStringList well_names;
+    QList<awfm::Timeseries> timeseries_list;
+
+    QList<awfm::Well> wells = model_.wells();
+    for (int i = 0; i < wells.size(); i++) {
+        well_names.push_back(wells[i].name());
+        timeseries_list.push_back(wells[i].q());
+    }
+
+    TimeseriesDlg dlg(well_names, timeseries_list,
+                      "Edit Pumping Rates", "Q");
+
     if (dlg.exec()) {
-        model_.setWells(dlg.wells());
-        setDirty(true);
-        emit modelChanged();
+            timeseries_list = dlg.timeseriesList();
+            int i = 0;
+            foreach(awfm::Timeseries ts, timeseries_list) {
+                model_.wellRef(i)->setQ(ts);
+                i++;
+            }
+            setDirty(true);
+            emit modelChanged();
+    }
+}
+
+void MainWindow::editObservedHeads()
+{
+    QStringList well_names;
+    QList<awfm::Timeseries> timeseries_list;
+
+    QList<awfm::Well> wells = model_.wells();
+    for (int i = 0; i < wells.size(); i++) {
+        well_names.push_back(wells[i].name());
+        timeseries_list.push_back(wells[i].wl());
+    }
+
+    TimeseriesDlg dlg(well_names, timeseries_list,
+                      "Edit Observed Water Levels", "h");
+
+    if (dlg.exec()) {
+            timeseries_list = dlg.timeseriesList();
+            int i = 0;
+            foreach(awfm::Timeseries ts, timeseries_list) {
+                model_.wellRef(i)->setWl(ts);
+                i++;
+            }
+            setDirty(true);
+            emit modelChanged();
     }
 }
 

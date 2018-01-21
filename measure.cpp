@@ -32,6 +32,26 @@ namespace awfm {
         v_ *= s;
     }
 
+    void Measure::scaleT(double s)
+    {
+        t_ *= s;
+    }
+
+    void Measure::scaleV(double s)
+    {
+        v_ *= s;
+    }
+
+    void Measure::translateT(double dt)
+    {
+        t_ += dt;
+    }
+
+    void Measure::translateV(double dv)
+    {
+        v_ += dv;
+    }
+
     void Measure::zeroBelow(double min_value)
     {
         v_ = fabs(v_) < min_value ? 0 : v_;

@@ -36,6 +36,13 @@ namespace awfm {
         }
     }
 
+    void Model::setOption(QString option, bool is_on)
+    {
+        if (options_.keys().contains(option)) {
+            options_[option] = is_on;
+        }
+    }
+
     void Model::setAquiferDrawdownModel(AbstractAquiferDrawdownModel *m)
     {
         if (aquiferDrawdownModel_) {

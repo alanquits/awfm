@@ -1,4 +1,4 @@
-#include "pumpingratesdlg.h"
+#include "timeseriesdlg.h"
 #include "importdlg.h"
 #include "timeseries.h"
 #include "well.h"
@@ -20,10 +20,13 @@
 #include <QTableWidget>
 #include <QWidget>
 
-PumpingRatesDlg::PumpingRatesDlg(awfm::Model *model)
+TimeseriesDlg::TimeseriesDlg(QStringList well_names, QList<awfm::Timeseries> time_series_s,
+                             QString window_title, QString value_table_header)
 {
-    wells_ = model->wells();
-    setWindowTitle("Edit Pumping Rates");
+    wellNames_ = well_names;
+    timeseriesList_ = time_series_s;
+    valueTableHeader_ = value_table_header;
+    setWindowTitle(window_title);
     initTables();
     initWidgets();
     methodChanged();
@@ -31,7 +34,7 @@ PumpingRatesDlg::PumpingRatesDlg(awfm::Model *model)
     initLayout();
 }
 
-void PumpingRatesDlg::initWidgets()
+void TimeseriesDlg::initWidgets()
 {
     recordCountLabel = new QLabel("");
     setRecordCount(0);
@@ -41,16 +44,29 @@ void PumpingRatesDlg::initWidgets()
 
     wellsLabel = new QLabel("Well: ");
     wellsComboBox = new QComboBox();
-    for (int i = 0; i < wells_.size(); i++) {
-        wellsComboBox->addItem(wells_[i].name());
-    }
+    wellsComboBox->addItems(wellNames_);
     connect(wellsComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(fillTableWithPumpingRates()));
-    fillTableWithPumpingRates();
+            this, SLOT(fillTable()));
+    fillTable();
 
     applyToAllWellsCheckBox = new QCheckBox("Apply to All Wells");
     applyToAllWellsCheckBox->setChecked(true);
 
+    editWidgets["Translate"] = new QWidget();
+    translateTLabel = new QLabel("Translate Time By: ");
+    translateTLineEdit = new QLineEdit();
+    translateVLabel = new QLabel(QString("Translate %1 By: ")
+                                 .arg(valueTableHeader_));
+    translateVLineEdit = new QLineEdit();
+    translateApplyButton = new QPushButton("Apply");
+
+    editWidgets["Scale"] = new QWidget();
+    scaleTLabel = new QLabel("Scale Time By: ");
+    scaleTLineEdit = new QLineEdit();
+    scaleVLabel = new QLabel(QString("Scale %1 By: ")
+                                 .arg(valueTableHeader_));
+    scaleVLineEdit = new QLineEdit();
+    scaleApplyButton = new QPushButton("Apply");
 
     editWidgets["Erroneous/Missing Data"] = new QWidget();
     errorCodeLabel = new QLabel("Value: ");
@@ -107,26 +123,67 @@ void PumpingRatesDlg::initWidgets()
             this, &QDialog::reject);
 
     connect(applyRangeButton, &QPushButton::clicked,
-            this, &PumpingRatesDlg::applyRangeButtonClicked);
+            this, &TimeseriesDlg::applyRangeButtonClicked);
 
     connect(applyAveragingButton, &QPushButton::clicked,
-            this, &PumpingRatesDlg::applyAveragingButtonClicked);
+            this, &TimeseriesDlg::applyAveragingButtonClicked);
 
     connect(applyErrorCodeButton, &QPushButton::clicked,
-            this, &PumpingRatesDlg::applyErrorCodeButtonClicked);
+            this, &TimeseriesDlg::applyErrorCodeButtonClicked);
+
+    connect(scaleApplyButton, &QPushButton::clicked,
+            this, &TimeseriesDlg::scaleButtonClicked);
+
+    connect(translateApplyButton, &QPushButton::clicked,
+            this, &TimeseriesDlg::translateButtonClicked);
+
+    connect(applyProjectionButton, &QPushButton::clicked,
+            this, &TimeseriesDlg::applyProjectionButtonClicked);
 }
 
-void PumpingRatesDlg::initTables()
+void TimeseriesDlg::initTables()
 {
-    rawTable = new AWFMTableWidget(0, 2, QStringList() << "t" << "Q");
+    rawTable = new AWFMTableWidget(0, 2, QStringList() << "t" << valueTableHeader_);
     rawTable->horizontalHeader()->setStretchLastSection(true);
 
     connect(rawTable, SIGNAL(importSelected()),
             this, SLOT(import()));
 }
 
-void PumpingRatesDlg::initMethodLayouts()
+void TimeseriesDlg::initMethodLayouts()
 {
+    // Scale
+    QGridLayout *scaleLayout = new QGridLayout();
+    scaleLayout->addWidget(scaleTLabel, 0, 0);
+    scaleLayout->addWidget(scaleTLineEdit, 0, 1);
+    scaleLayout->addWidget(scaleVLabel, 1, 0);
+    scaleLayout->addWidget(scaleVLineEdit, 1, 1);
+
+    QHBoxLayout *scaleApplyLayout = new QHBoxLayout();
+    scaleApplyLayout->addStretch();
+    scaleApplyLayout->addWidget(scaleApplyButton);
+
+    QVBoxLayout *scaleLayoutWithApply = new QVBoxLayout();
+    scaleLayoutWithApply->addLayout(scaleLayout);
+    scaleLayoutWithApply->addLayout(scaleApplyLayout);
+    editWidgets["Scale"]->setLayout(scaleLayoutWithApply);
+
+    // Translate
+    QGridLayout *translateLayout = new QGridLayout();
+    translateLayout->addWidget(translateTLabel, 0, 0);
+    translateLayout->addWidget(translateTLineEdit, 0, 1);
+    translateLayout->addWidget(translateVLabel, 1, 0);
+    translateLayout->addWidget(translateVLineEdit, 1, 1);
+
+    QHBoxLayout *translateApplyLayout = new QHBoxLayout();
+    translateApplyLayout->addStretch();
+    translateApplyLayout->addWidget(translateApplyButton);
+
+    QVBoxLayout *translateLayoutWithApply = new QVBoxLayout();
+    translateLayoutWithApply->addLayout(translateLayout);
+    translateLayoutWithApply->addLayout(translateApplyLayout);
+    editWidgets["Translate"]->setLayout(translateLayoutWithApply);
+
     // Range Constraints
     QHBoxLayout *rangeLayout = new QHBoxLayout();
     rangeLayout->addWidget(minValueLabel);
@@ -197,7 +254,7 @@ void PumpingRatesDlg::initMethodLayouts()
     editWidgets["Data Reduction"]->setLayout(averagingLayoutWithApply);
 }
 
-void PumpingRatesDlg::initLayout()
+void TimeseriesDlg::initLayout()
 {
     QVBoxLayout *leftLayout = new QVBoxLayout();
     QVBoxLayout *rightLayout = new QVBoxLayout();
@@ -219,6 +276,8 @@ void PumpingRatesDlg::initLayout()
     rightLayout->addWidget(editWidgets["Erroneous/Missing Data"]);
     rightLayout->addWidget(editWidgets["Project Onto Line"]);
     rightLayout->addWidget(editWidgets["Data Reduction"]);
+    rightLayout->addWidget(editWidgets["Scale"]);
+    rightLayout->addWidget(editWidgets["Translate"]);
 
 
     QHBoxLayout *bottomLayout = new QHBoxLayout();
@@ -236,9 +295,9 @@ void PumpingRatesDlg::initLayout()
     setLayout(mainLayout);
 }
 
-void PumpingRatesDlg::fillTableWithPumpingRates()
+void TimeseriesDlg::fillTable()
 {
-    awfm::Timeseries ts = wells_[wellsComboBox->currentIndex()].q();
+    awfm::Timeseries ts = timeseriesList_[wellsComboBox->currentIndex()];
     rawTable->setRowCount(ts.size());
     for (int i = 0; i < ts.size(); i++) {
         double t = ts.t(i);
@@ -249,12 +308,12 @@ void PumpingRatesDlg::fillTableWithPumpingRates()
     recordCountLabel->setText(QString("%1 records").arg(ts.size()));
 }
 
-void PumpingRatesDlg::setRecordCount(int records)
+void TimeseriesDlg::setRecordCount(int records)
 {
     recordCountLabel->setText(QString("%1 records").arg(records));
 }
 
-void PumpingRatesDlg::methodChanged()
+void TimeseriesDlg::methodChanged()
 {
     foreach (QString key, editWidgets.keys()) {
         editWidgets[key]->setVisible(false);
@@ -262,24 +321,23 @@ void PumpingRatesDlg::methodChanged()
     editWidgets[methodComboBox->currentText()]->setVisible(true);
 }
 
-void PumpingRatesDlg::applyAveragingButtonClicked()
+void TimeseriesDlg::applyAveragingButtonClicked()
 {
     QString selected_well_name = wellsComboBox->currentText();
-    for (size_t i = 0; i < wells_.size(); i++) {
+    for (size_t i = 0; i < wellNames_.size(); i++) {
+        QString well_name = wellNames_[i];
         if (averageBySignRadio->isChecked()) {
             if (applyToAllWellsCheckBox->isChecked()
-                    || wells_[i].name() == selected_well_name) {
-                awfm::Timeseries q = wells_[i].q();
-                q.averageBySign();
-                wells_[i].setQ(q);
+                    || well_name == selected_well_name) {
+                timeseriesList_[i].averageBySign();
             }
         }
     }
 
-    fillTableWithPumpingRates();
+    fillTable();
 }
 
-void PumpingRatesDlg::applyErrorCodeButtonClicked()
+void TimeseriesDlg::applyErrorCodeButtonClicked()
 {
     if (errorCodeLineEdit->text().isEmpty()) {
         return;
@@ -288,70 +346,137 @@ void PumpingRatesDlg::applyErrorCodeButtonClicked()
     QString on_error_text = onErrorComboBox->currentText();
 
     QString selected_well_name = wellsComboBox->currentText();
-    for (size_t i = 0; i < wells_.size(); i++) {
+    for (size_t i = 0; i < wellNames_.size(); i++) {
+        QString well_name = wellNames_[i];
         if (applyToAllWellsCheckBox->isChecked()
-                || wells_[i].name()==selected_well_name) {
-            awfm::Timeseries q = wells_[i].q();
+                || well_name==selected_well_name) {
             if (on_error_text == "Linear Interpolate") {
-                q.interpolateOverValue(error_code);
+                timeseriesList_[i].interpolateOverValue(error_code);
             } else if (on_error_text == "Remove") {
-                q.removeByValue(error_code);
+                timeseriesList_[i].removeByValue(error_code);
             } else {
                 // This line should not be reached.
             }
-            wells_[i].setQ(q);
         }
     }
-    fillTableWithPumpingRates();
+    fillTable();
 }
 
-void PumpingRatesDlg::applyRangeButtonClicked()
+void TimeseriesDlg::applyRangeButtonClicked()
 {
     QString selected_well_name = wellsComboBox->currentText();
-    for (size_t i = 0; i < wells_.size(); i++) {
+    for (size_t i = 0; i < wellNames_.size(); i++) {
+        QString well_name = wellNames_[i];
         if (!minValueLineEdit->text().isEmpty()) {
             double min_value = minValueLineEdit->text().toDouble();
             if (applyToAllWellsCheckBox->isChecked()
-                || wells_[i].name() == selected_well_name) {
-                awfm::Timeseries q = wells_[i].q();
-                q.setMinValue(min_value);
-                wells_[i].setQ(q);
+                || well_name == selected_well_name) {
+                timeseriesList_[i].setMinValue(min_value);
             }
         }
         if (!maxValueLineEdit->text().isEmpty()) {
             double max_value = maxValueLineEdit->text().toDouble();
             if (applyToAllWellsCheckBox->isChecked()
-                || wells_[i].name() == selected_well_name) {
-                awfm::Timeseries q = wells_[i].q();
-                q.setMaxValue(max_value);
-                wells_[i].setQ(q);
+                || well_name == selected_well_name) {
+                timeseriesList_[i].setMaxValue(max_value);
             }
         }
         if (!minMagnitudeLineEdit->text().isEmpty()) {
             double min_magnitude = minMagnitudeLineEdit->text().toDouble();
             if (applyToAllWellsCheckBox->isChecked()
-                || wells_[i].name() == selected_well_name) {
-                awfm::Timeseries q = wells_[i].q();
-                q.setMinMagnitude(min_magnitude);
-                wells_[i].setQ(q);
+                || well_name == selected_well_name) {
+                timeseriesList_[i].setMinMagnitude(min_magnitude);
             }
         }
     }
-    fillTableWithPumpingRates();
+    fillTable();
 
 }
 
-void PumpingRatesDlg::cellChanged(QTableWidgetItem *item)
+void TimeseriesDlg::applyProjectionButtonClicked()
+{
+
+    if (t0ProjectLineEdit->text().isEmpty()
+        || tfProjectLineEdit->text().isEmpty()
+        || dtProjectLineEdit->text().isEmpty()) {
+        return;
+    }
+
+    double t0 = t0ProjectLineEdit->text().toDouble();
+    double tf = tfProjectLineEdit->text().toDouble();
+    double dt = dtProjectLineEdit->text().toDouble();
+
+    QString selected_well_name = wellsComboBox->currentText();
+    for (size_t i = 0; i < wellNames_.size(); i++) {
+        QString well_name = wellNames_[i];
+        if (applyToAllWellsCheckBox->isChecked()
+                || well_name==selected_well_name) {
+            awfm::Timeseries ts_proj = timeseriesList_[i].projectOntoLine(t0, tf, dt);
+            timeseriesList_[i] = ts_proj;
+        }
+    }
+    fillTable();
+}
+
+void TimeseriesDlg::scaleButtonClicked()
+{
+    if (scaleTLineEdit->text().isEmpty() && scaleVLineEdit->text().isEmpty()) {
+        return;
+    }
+
+    QString selected_well_name = wellsComboBox->currentText();
+    for (size_t i = 0; i < wellNames_.size(); i++) {
+        QString well_name = wellNames_[i];
+        if (applyToAllWellsCheckBox->isChecked()
+                || well_name==selected_well_name) {
+            if (!scaleTLineEdit->text().isEmpty()) {
+                double s = scaleTLineEdit->text().toDouble();
+                timeseriesList_[i].scaleT(s);
+            }
+            if (!scaleVLineEdit->text().isEmpty()) {
+                double s = scaleVLineEdit->text().toDouble();
+                timeseriesList_[i].scaleV(s);
+            }
+        }
+    }
+    fillTable();
+}
+
+void TimeseriesDlg::translateButtonClicked()
+{
+    if (translateTLineEdit->text().isEmpty() && translateVLineEdit->text().isEmpty()) {
+        return;
+    }
+
+    QString selected_well_name = wellsComboBox->currentText();
+    for (size_t i = 0; i < wellNames_.size(); i++) {
+        QString well_name = wellNames_[i];
+        if (applyToAllWellsCheckBox->isChecked()
+                || well_name==selected_well_name) {
+            if (!translateTLineEdit->text().isEmpty()) {
+                double dt = translateTLineEdit->text().toDouble();
+                timeseriesList_[i].translateT(dt);
+            }
+            if (!translateVLineEdit->text().isEmpty()) {
+                double dv = translateVLineEdit->text().toDouble();
+                timeseriesList_[i].translateV(dv);
+            }
+        }
+    }
+    fillTable();
+}
+
+void TimeseriesDlg::cellChanged(QTableWidgetItem *item)
 {
 
 }
 
-void PumpingRatesDlg::import()
+void TimeseriesDlg::import()
 {
     int well_idx = wellsComboBox->currentIndex();
 
     QStringList targets;
-    targets << "t" << "Q";
+    targets << "t" << valueTableHeader_;
     ImportDlg *dlg = new ImportDlg(targets);
 
     if (!dlg->exec()) {
@@ -382,9 +507,9 @@ void PumpingRatesDlg::import()
             t = df->getDouble(df->columnIndex(target_map["t"]));
         }
 
-        if (!df->isNull(df->columnIndex(target_map["Q"]))) {
+        if (!df->isNull(df->columnIndex(target_map[valueTableHeader_]))) {
             reading_values = true;
-            v = df->getDouble(df->columnIndex(target_map["Q"]));
+            v = df->getDouble(df->columnIndex(target_map[valueTableHeader_]));
         } else {
             v = -9999;
         }
@@ -403,23 +528,23 @@ void PumpingRatesDlg::import()
             " in chronological order or contains duplicates.");
     }
 
-    wells_[well_idx].setQ(ts);
+    timeseriesList_[well_idx] = ts;
 
-    fillTableWithPumpingRates();
+    fillTable();
     delete df;
 }
 
-void PumpingRatesDlg::insertAbove(QList<int> selected_rows)
+void TimeseriesDlg::insertAbove(QList<int> selected_rows)
 {
 
 }
 
-void PumpingRatesDlg::insertBelow(QList<int> selected_rows)
+void TimeseriesDlg::insertBelow(QList<int> selected_rows)
 {
 
 }
 
-void PumpingRatesDlg::deleteRows(QList<int> selected_rows)
+void TimeseriesDlg::deleteRows(QList<int> selected_rows)
 {
 
 }

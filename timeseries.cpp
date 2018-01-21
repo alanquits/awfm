@@ -159,6 +159,64 @@ namespace awfm {
         return true;
     }
 
+    double Timeseries::min()
+    {
+        if (size() == 0) {
+            assert(false);
+        }
+        double current_min = data_[0].v();
+        foreach(Measure m, data_) {
+            current_min = fmin(current_min, m.v());
+        }
+        return current_min;
+    }
+
+    double Timeseries::max()
+    {
+        if (size() == 0) {
+            assert(false);
+        }
+        double current_max = data_[0].v();
+        foreach(Measure m, data_) {
+            current_max = fmax(current_max, m.v());
+        }
+        return current_max;
+    }
+
+    double Timeseries::minT()
+    {
+        if (size() == 0) {
+            assert(false);
+        }
+        double current_min = data_[0].t();
+        foreach(Measure m, data_) {
+            current_min = fmin(current_min, m.t());
+        }
+        return current_min;
+    }
+
+    double Timeseries::maxT()
+    {
+        if (size() == 0) {
+            assert(false);
+        }
+        double current_max = data_[0].t();
+        foreach(Measure m, data_) {
+            current_max = fmax(current_max, m.t());
+        }
+        return current_max;
+    }
+
+    double Timeseries::minV()
+    {
+        return this->min();
+    }
+
+    double Timeseries::maxV()
+    {
+        return this->max();
+    }
+
     double Timeseries::linearInterpolateValueAtTime(double t)
     {
         assert(data_.size() > 2);
@@ -178,6 +236,47 @@ namespace awfm {
         // Function should never reach this point
         assert(false);
         return 0;
+    }
+
+    Timeseries Timeseries::projectOntoLine(double tmin, double tmax, double dt)
+    {
+        Timeseries ts_projected;
+        if (size() < 2) {
+            return ts_projected;
+        }
+
+        int data_idx = 1;
+        int loop_idx = 0;
+        double current_time = tmin;
+        while(current_time < tmax) {
+            current_time = tmin + loop_idx*dt;
+            if (current_time < data_[0].t()) {
+                loop_idx += 1;
+                continue;
+            }
+
+            if (current_time > data_.last().t()) {
+                current_time = tmax+1; // break out of while loop
+                break;
+            }
+
+            for (; data_idx < data_.size();) {
+                double prev_t = data_[data_idx-1].t();
+                double next_t = data_[data_idx].t();
+                if (prev_t <= current_time && current_time < next_t) {
+                    double dt = next_t - prev_t;
+                    double prev_v = data_[data_idx-1].v();
+                    double next_v = data_[data_idx].v();
+                    double slope = (next_v - prev_v)/dt;
+                    double v = prev_v + slope*(current_time - prev_t);
+                    ts_projected.append(current_time, v);
+                    break;
+                }
+                data_idx++;
+
+            }
+            loop_idx++;
+        }
     }
 
     void Timeseries::removeByValue(double v)
@@ -231,6 +330,34 @@ namespace awfm {
     {
         for (size_t i = 0; i < data_.size(); i++) {
             data_[i].scale(s);
+        }
+    }
+
+    void Timeseries::scaleT(double s)
+    {
+        for (size_t i = 0; i < data_.size(); i++) {
+            data_[i].scaleT(s);
+        }
+    }
+
+    void Timeseries::scaleV(double s)
+    {
+        for (size_t i = 0; i < data_.size(); i++) {
+            data_[i].scaleV(s);
+        }
+    }
+
+    void Timeseries::translateT(double dt)
+    {
+        for (size_t i = 0; i < data_.size(); i++) {
+            data_[i].translateT(dt);
+        }
+    }
+
+    void Timeseries::translateV(double dv)
+    {
+        for (size_t i = 0; i < data_.size(); i++) {
+            data_[i].translateV(dv);
         }
     }
 
