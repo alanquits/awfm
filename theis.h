@@ -22,6 +22,10 @@ namespace awfm {
 
         double T() { return T_; }
         double S() { return S_; }
+
+        virtual void toStdUnits(LengthUnit lu, TimeUnit tu);
+        virtual void fromStdUnits(LengthUnit lu, TimeUnit tu);
+
     };
 }
 #endif // THEIS_H

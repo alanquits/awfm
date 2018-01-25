@@ -125,7 +125,7 @@ void MainWindow::createActions()
     connect(wellLossAct, &QAction::triggered, this, &MainWindow::editWellLoss);
 
     runModelAct = new QAction(tr("&Run"), this);
-    connect(runModelAct, &QAction::triggered, this, &MainWindow::dummySlot);
+    connect(runModelAct, &QAction::triggered, this, &MainWindow::runModel);
 
     pestSettingsAct = new QAction(tr("&Settings"), this);
     connect(pestSettingsAct, &QAction::triggered, this, &MainWindow::dummySlot);
@@ -347,6 +347,12 @@ void MainWindow::editObservedHeads()
             setDirty(true);
             emit modelChanged();
     }
+}
+
+void MainWindow::runModel()
+{
+    model_.run();
+    emit modelChanged();
 }
 
 void MainWindow::openModel()

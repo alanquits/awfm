@@ -26,6 +26,9 @@ public:
     QList<double> ts() { return ts_; }
     QList<double> ts(Well &w);
 
+    void toStdUnits(TimeUnit tu);
+    void fromStdUnits(TimeUnit tu);
+
 };
 }
 

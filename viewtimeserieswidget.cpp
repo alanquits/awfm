@@ -189,14 +189,7 @@ void ViewTimeseriesWidget::drawChart()
     awfm::Well *w = model->wellRef(idx);
     QChart *chart = new QChart();
 
-    double min_t, max_t;
-    double x_axis_min, x_axis_max;
-    int x_tick_count;
-    wellTimeRange(w, min_t, max_t);
-    axisExtent(min_t, max_t, x_axis_min, x_axis_max,
-               x_tick_count);
-    xAxis->setRange(x_axis_min, x_axis_max);
-    xAxis->setTickCount(x_tick_count);
+    //xAxis->applyNiceNumbers();
     chart->addAxis(xAxis, Qt::AlignBottom);
 
 
@@ -206,12 +199,7 @@ void ViewTimeseriesWidget::drawChart()
         awfm::Timeseries q_abs = w->q();
         q_abs.absolute();
         if (q_abs.size() > 0) {
-            double axis_min, axis_max;
-            int ticks;
-            axisExtent(q_abs.minV(), q_abs.maxV(), axis_min,
-                       axis_max, ticks);
-            yAxis1->setRange(axis_min, axis_max);
-            yAxis1->setTickCount(ticks);
+            //yAxis1->applyNiceNumbers();
             chart->addAxis(yAxis1, Qt::AlignLeft);
         }
 
@@ -254,12 +242,7 @@ void ViewTimeseriesWidget::drawChart()
         QLineSeries *wl_series = new QLineSeries();
 
         if (wl.size() > 0) {
-            double wl_axis_min, wl_axis_max;
-            int wl_axis_ticks;
-            axisExtent(wl.min(), wl.max(), wl_axis_min, wl_axis_max,
-                       wl_axis_ticks);
-            yAxis2->setRange(wl_axis_min, wl_axis_max);
-            yAxis2->setTickCount(wl_axis_ticks);
+            //yAxis2->applyNiceNumbers();
             chart->addAxis(yAxis2, Qt::AlignRight);
         }
 
@@ -267,14 +250,39 @@ void ViewTimeseriesWidget::drawChart()
             wl_series->append(wl.t(i), wl.v(i));
         }
         chart->addSeries(wl_series);
-        wl_series->setName("Water Level");
+        wl_series->setName("Observed Water Level");
         wl_series->attachAxis(xAxis);
         wl_series->attachAxis(yAxis2);
-
-
-
-
     }
+
+    if (ModeledWaterLevelsCheckBox->isEnabled()
+        && ModeledWaterLevelsCheckBox->isChecked()) {
+        chart_is_available = true;
+
+        QList<double> ts = w->result("t");
+        QList<double> wls = w->result("wl");
+        // Build timeseries to use timeseries functionality
+        awfm::Timeseries wl;
+        for (int i = 0; i < ts.size(); i++) {
+            wl.append(ts[i], wls[i]);
+        }
+
+        QLineSeries *wl_series = new QLineSeries();
+
+        if (wl.size() > 0) {
+            //yAxis2->applyNiceNumbers();
+            chart->addAxis(yAxis2, Qt::AlignRight);
+        }
+
+        for (int i = 0; i < wl.size(); i++) {
+            wl_series->append(wl.t(i), wl.v(i));
+        }
+        chart->addSeries(wl_series);
+        wl_series->setName("Modeled Water Level");
+        wl_series->attachAxis(xAxis);
+        wl_series->attachAxis(yAxis2);
+    }
+
 
     if (chart_is_available) {
         chart->setTitle(w->name());
@@ -287,6 +295,9 @@ void ViewTimeseriesWidget::drawChart()
 
     }
 
+    xAxis->applyNiceNumbers();
+    yAxis1->applyNiceNumbers();
+    yAxis2->applyNiceNumbers();
     chartView->setChart(chart);
 }
 
@@ -298,6 +309,6 @@ void ViewTimeseriesWidget::wellSelectionChanged(int idx)
     awfm::Well *w = model->wellRef(idx);
     observedPumpingRatesCheckBox->setEnabled(w->q().size() > 0);
     observedWaterLevelsCheckBox->setEnabled(w->wl().size() > 0);
-    ModeledWaterLevelsCheckBox->setEnabled(w->sAq().size() > 0);
+    ModeledWaterLevelsCheckBox->setEnabled(w->hasResults());
     drawChart();
 }

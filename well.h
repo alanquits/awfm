@@ -2,14 +2,13 @@
 #define WELL_H
 
 #include <QString>
-#include "abstractwelllossmodel.h"
 #include "timeseries.h"
 
 namespace awfm {
     class Well
     {
         QString name_; // name (must be unique)
-        double x_;  // c coordinate
+        double x_;  // x coordinate
         double y_;  // y coordinate
         double rw_; // well radius
         double h0_; // static water level
@@ -22,10 +21,13 @@ namespace awfm {
         Timeseries wl_;    // observed water levels
         Timeseries q_;     // observed pumping
         Timeseries dQ_;    // delta pumping (used by aquifer drawdown models)
-        Timeseries sAq_;   // modeled aquifer drawdown
-        Timeseries sLoss_; // modeled well loss
 
-        AbstractWellLossModel* wellLossModel_;
+
+//        Timeseries sAq_;   // modeled aquifer drawdown
+//        Timeseries sLoss_; // modeled well loss
+
+        QMap<QString, QList<double> > results_;
+
     public:
         Well(QString name, double x, double y, double rw, double h0);
 
@@ -43,8 +45,6 @@ namespace awfm {
         Timeseries wl() { return wl_; }
         Timeseries q() { return q_; }
         Timeseries dQ() { return dQ_; }
-        Timeseries sAq() { return sAq_; }
-        Timeseries sLoss() { return sLoss_; }
 
         void setName(QString name);
         void setX(double x);
@@ -59,12 +59,23 @@ namespace awfm {
 
         void setOption(QString option_name, bool v);
 
+        void toStdUnits(LengthUnit lu, TimeUnit tu, DischargeUnit du);
+        void fromStdUnits(LengthUnit lu, TimeUnit tu, DischargeUnit du);
+
+        void clearResults();
+        void appendResult(double t, double h0, double s_aq, double s_w);
+        bool hasResults();
+        void setResult(QString result_key, QList<double> ts);
+        QList<double> result(QString result_key);
+        QMap<QString, double> resultsByIndex(size_t idx);
+        double wellLossAt(double t, bool turbulant_well_loss, bool laminar_well_loss,
+                          bool transient_well_loss);
+        double cAtT(double t, bool turbulant_well_loss, bool turbulant_well_loss_transient);
+        double bAtT(double t, bool laminar_well_loss, bool laminar_well_loss_transient);
+        double h0AtT(double t, bool h0_is_transient);
 
         void setWl(Timeseries wl) { wl_ = wl; }
         void setQ(Timeseries q);
-        void setSAq(Timeseries sAq) { sAq_ = sAq; }
-        void setSLoss(Timeseries sLoss) { sLoss_ = sLoss; }
-        void setWellLossModel(AbstractWellLossModel *m);
 
         double distanceTo(double x, double y);
         double distanceTo(Well &w);

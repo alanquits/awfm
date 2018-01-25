@@ -1,0 +1,239 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% LaTeX book template                           %%
+%% Author:  Amber Jain (http://amberj.devio.us/) %%
+%% License: ISC license                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[a4paper,11pt]{book}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Source: http://en.wikibooks.org/wiki/LaTeX/Hyperlinks %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage[english]{babel}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 'dedication' environment: To add a dedication paragraph at the start of book %
+% Source: http://www.tug.org/pipermail/texhax/2010-June/015184.html            %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newenvironment{dedication}
+%{
+%   \cleardoublepage
+%   \thispagestyle{empty}
+%   \vspace*{\stretch{1}}
+%   \hfill\begin{minipage}[t]{0.66\textwidth}
+%   \raggedright
+%}
+%{
+%   \end{minipage}
+%   \vspace*{\stretch{3}}
+%   \clearpage
+%}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter quote at the start of chapter        %
+% Source: http://tex.stackexchange.com/a/53380 %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+\renewcommand{\@chapapp}{}% Not necessary...
+\newenvironment{chapquote}[2][2em]
+  {\setlength{\@tempdima}{#1}%
+   \def\chapquote@author{#2}%
+   \parshape 1 \@tempdima \dimexpr\textwidth-2\@tempdima\relax%
+   \itshape}
+  {\par\normalfont\hfill--\ \chapquote@author\hspace*{\@tempdima}\par\bigskip}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% First page of book which contains 'stuff' like: %
+%  - Book title, subtitle                         %
+%  - Book author name                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Book's title and subtitle
+\title{\Huge \textbf{Analytic Wellfield Model}}
+% Author
+\author{\textsc{Alan Lewis}\thanks{\url{www.github.com/geouke/awfm}}}
+
+
+\begin{document}
+
+\frontmatter
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Add a dedication paragraph to dedicate your book to someone %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{dedication}
+%Dedicated to Calvin and Hobbes.
+%\end{dedication}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Auto-generated table of contents, list of figures and list of tables %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tableofcontents
+\listoffigures
+\listoftables
+
+\mainmatter
+
+%%%%%%%%%%%
+% Preface %
+%%%%%%%%%%%
+\chapter*{Introduction}
+
+\begin{chapquote}{Author's name, \textit{Source of this quote}}
+``This is a quote and I don't know who said this.''
+\end{chapquote}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis risus ante, auctor et pulvinar non, posuere ac lacus. Praesent egestas nisi id metus rhoncus ac lobortis sem hendrerit. Etiam et sapien eget lectus interdum posuere sit amet ac urna.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Give credit where credit is due. %
+% Say thanks!                      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section*{Acknowledgements}
+%\begin{itemize}
+%\item A special word of thanks goes to Professor Don Knuth\footnote{\url{http://www-cs-faculty.stanford.edu/~uno/}} (for \TeX{}) and Leslie Lamport\footnote{\url{http://www.lamport.org/}} (for \LaTeX{}).
+%\item I'll also like to thank Gummi\footnote{\url{http://gummi.midnightcoding.org/}} developers and LaTeXila\footnote{\url{http://projects.gnome.org/latexila/}} development team for their awesome \LaTeX{} editors.
+%\item I'm deeply indebted my parents, colleagues and friends for their support and encouragement.
+%\end{itemize}
+%\mbox{}\\
+%\mbox{}\\
+%\noindent Amber Jain \\
+%\noindent \url{http://amberj.devio.us/}
+
+%%%%%%%%%%%%%%%%
+% NEW CHAPTER! %
+%%%%%%%%%%%%%%%%
+\chapter{Mathematical Model}
+
+\section{Forward Model}
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. \\ Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. \\ Lorem ipsum list:
+
+\subsection{Recoverable Water Level}
+
+\subsection{Aquifer Drawdown Model}
+
+\subsection{Well-Loss Model}
+
+\section{Parameter Estimation}
+
+\subsection{Aquifer Parameters}
+
+\subsection{Recoverable Water Level(s) and Well-Loss Coefficient(s)}
+
+\chapter{Using the Graphical Interface}
+
+\section{Creating a New Model}
+
+\section{Units}
+
+The units dialog is used for specifying three unit types in the model:
+length, time, and discharge. The discharge unit applies to pumping rates
+\footnote{In reality, discharge may be expressed in units of length and time. 
+Here, discharge units are specified separately to allow plotting in units familiar to the user.},
+while length and time units apply to everything else.
+
+\section{Data Importing}
+
+\subsection{CSV}
+
+\subsection{Excel}
+
+\subsection{SQLite}
+
+\section{Timeseries Processing}
+
+The timeseries dialog, which is used for importing and viewing
+pumping rates and observed water levels, has a handful of useful 
+functions detailed below.
+
+\subsection{Scale}
+
+\emph{Scale} here is used in the mathematical sense of multiplying
+a value by a scalar. This function is most useful for converting 
+between units, but could also be used to model what-if scenarious. 
+For example, it is possible to see the effect of increasing or 
+decreasing discharge volumes by a percent.
+
+\subsection{Translate}
+
+\emph{Tranlation} is also used in the mathematical sense of adding
+some scalar to a value. This function is useful if observed water
+levels at multiple wells were all taken relative to their own piezometer
+elevations and need to be converted to a consistent elevation.
+
+Another application of the translation function is to adjust $t_0$.
+Data imported from Excel may have a $t_0$ in the early 1900s, whereas
+it may be more useful to have a $t_0$ when production began at the wellfield.
+
+\subsection{Erroneous/Missing Data}
+
+The data import utility will set missing row values to -9999. These need
+to be dealt with before the forward model can produce meaningful results.
+
+One option is to simply remove missing data. In the context of pumping
+rates, this means that the value at the missing data point is effectively
+equal to the value at the previously measured data point:
+
+<insert table>
+
+Another option is to perform a linear interpolation through the missing
+data point, which may be desirable for approximating missing water levels.
+
+\subsection{Project Onto Line}
+
+This operation performs a piece-wise linear interpolation, which is
+useful for data reduction or simply for obtaining a data set with a 
+constant time step for input into a numerical model.
+
+\subsection{Range Constraints}
+
+\subsection{Data Reduction}
+
+\chapter{Examples}
+
+\section{Simple Pumping Test}
+
+\section{Analysis With Realistic Data}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Sample table                                        %
+% Source: www1.maths.leeds.ac.uk/latex/TableHelp1.pdf %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{table}[ht]
+%\caption{Sample table} % title of Table
+%\centering % used for centering table
+%\begin{tabular}{c c c c}
+% centered columns (4 columns)
+%\hline\hline %inserts double horizontal lines
+%S. No. & Column\#1 & Column\#2 & Column\#3 \\ [0.5ex]
+% inserts table
+%heading
+%\hline % inserts single horizontal line
+%1 & 50 & 837 & 970 \\
+%2 & 47 & 877 & 230 \\
+%3 & 31 & 25 & 415 \\
+%4 & 35 & 144 & 2356 \\
+%5 & 45 & 300 & 556 \\ [1ex] % [1ex] adds vertical space
+%\hline %inserts single line
+%\end{tabular}
+%\label{table:nonlin} % is used to refer this table in the text
+%\end{table}
+
+%Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. \\ Lorem ipsum list:
+%\begin{itemize}
+%\item Mauris sit amet nulla mi, vitae rutrum ante.
+%\item Maecenas quis nulla risus, vel tincidunt ligula.
+%\item Nullam ac enim neque, non \emph{dapibus} mauris.
+%\end{itemize}
+
+%\noindent Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis risus ante, auctor et pulvinar non, posuere ac lacus. Praesent egestas nisi id metus rhoncus ac lobortis sem hendrerit. Etiam et sapien eget lectus interdum posuere sit amet ac urna\footnote{Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis risus ante, auctor et pulvinar non, posuere ac lacus.}:
+
+
+\end{document}

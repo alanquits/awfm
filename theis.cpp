@@ -13,13 +13,27 @@ namespace awfm {
         Timeseries dQ = w.dQ();
         for (size_t i = 0; i < dQ.size(); i++) {
             if (t <= dQ.t(i)) {
-                continue;
+                break;
             } else {
                 double r = w.distanceTo(x, y);
-                double u = (pow(r, 2)*S_)/(4*T_*t);
+                double dt = t - dQ.t(i);
+                double u = (pow(r, 2)*S_)/(4*T_*dt);
                 s += (dQ.v(i)/(4*M_PI*T_)) * W(u);
             }
         }
         return s;
     }
+
+    void Theis::toStdUnits(LengthUnit lu, TimeUnit tu)
+    {
+        T_ *= pow(Utility::conversionFactor(lu), 2)
+                / Utility::conversionFactor(tu);
+    }
+
+    void Theis::fromStdUnits(LengthUnit lu, TimeUnit tu)
+    {
+        T_ /= pow(Utility::conversionFactor(lu), 2)
+                / Utility::conversionFactor(tu);
+    }
+
 }

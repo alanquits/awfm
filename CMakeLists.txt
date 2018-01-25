@@ -39,7 +39,7 @@ set(NAME_SOURCES
     temporaldomain.cpp
     viewtimeserieswidget.cpp
     timeseriesdlg.cpp
-    timeseriesplotwidget.cpp
+#    timeseriesplotwidget.cpp
     xlsxdataframe.cpp
     unitsdlg.cpp
     welllossdlg.cpp
@@ -74,7 +74,7 @@ set(NAME_HEADERS measure.h
     modelio.h
     viewtimeserieswidget.h
     temporaldomain.h
-    timeseriesplotwidget.h
+#    timeseriesplotwidget.h
     xlsxdataframe.h
     unitsdlg.h
     welllossdlg.h

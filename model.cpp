@@ -71,24 +71,58 @@ namespace awfm {
 
     void Model::runAtWell(size_t idx)
     {
-        Timeseries sAq;
-        Timeseries sLoss;
-        double x = wells_[idx].x();
-        double y = wells_[idx].y();
-        QList<double> ts_at_well;
-        ts_at_well = temporalDomain_.domainType() == TEMPORALDOMAIN_ATWELLS
-                    ? wells_[idx].wl().ts()
-                    : temporalDomain_.ts();
+        bool turbulant_well_loss =
+                isOptionOn("well_loss_turbulant_on");
+        bool laminar_well_loss =
+                isOptionOn("well_loss_laminar_on");
+        bool transient_well_loss =
+                isOptionOn("well_loss_transient_on");
+        bool transient_h0 =
+                isOptionOn("h0_transient_on");
 
-        for (int i = 0; i < ts_at_well.size(); i++) {
-            double t = ts_at_well[i];
-            double s_aq = aquiferDrawdownModel_->drawdown(wells_, x, y, t);
-            sAq.append(t, s_aq);
-//            double s_wl = wellLossModel_->drawdown(wells_[idx], t);
-//            sLoss.append(t, s_wl);
+        for (int i = 0; i < wells_.length(); i++) {
+            wells_[i].toStdUnits(lengthUnit_, timeUnit_, dischargeUnit_);
+        }
+        temporalDomain_.toStdUnits(timeUnit_);
+        aquiferDrawdownModel_->toStdUnits(lengthUnit_, timeUnit_);
+
+
+//        QList<double> ts_at_well;
+//        ts_at_well = temporalDomain_.domainType() == TEMPORALDOMAIN_ATWELLS
+//                    ? wells_[idx].wl().ts()
+//                    : temporalDomain_.ts();
+
+        Well *observation_well = wellRef(idx);
+        observation_well->clearResults();
+        QList<double> ts_at_observation_well;
+        ts_at_observation_well =
+            temporalDomain_.domainType() == TEMPORALDOMAIN_ATWELLS
+            ? observation_well->wl().ts()
+            : temporalDomain_.ts();
+
+        double x = observation_well->x();
+        double y = observation_well->y();
+        foreach(double t, ts_at_observation_well) {
+            double s_aq = 0;
+            for (int i = 0; i < wellsRef()->length(); i++) {
+                Well *pumping_well = wellRef(i);
+                s_aq += aquiferDrawdownModel_->drawdownAtWell(*pumping_well, x, y, t);
+            }
+            double s_w = observation_well->wellLossAt(t, turbulant_well_loss,
+                                                      laminar_well_loss, transient_well_loss);
+            double h0 = observation_well->h0AtT(t, transient_h0);
+            // Convert results in std units back to displayed units
+            t /= Utility::conversionFactor(timeUnit_);
+            h0 /= Utility::conversionFactor(lengthUnit_);
+            s_aq /= Utility::conversionFactor(lengthUnit_);
+            s_w /= Utility::conversionFactor(lengthUnit_);
+            observation_well->appendResult(t, h0, s_aq, s_w);
         }
 
-        wells_[idx].setSAq(sAq);
-        wells_[idx].setSLoss(sLoss);
+        for (int i = 0; i < wells_.length(); i++) {
+            wells_[i].fromStdUnits(lengthUnit_, timeUnit_, dischargeUnit_);
+        }
+        temporalDomain_.fromStdUnits(timeUnit_);
+        aquiferDrawdownModel_->fromStdUnits(lengthUnit_, timeUnit_);
     }
 }

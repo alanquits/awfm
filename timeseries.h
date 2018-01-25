@@ -20,6 +20,8 @@ namespace awfm {
         bool append(double t);
         bool append(Measure m);
 
+        void debugToConsole();
+
         void readFromFile(QString file_path);
         void writeToFile(QString file_path);
 
@@ -71,6 +73,7 @@ namespace awfm {
         double valueMean();
         double valueMedian();
         void zeroBelow(double min_value);
+        double valueAtT(double t);
     };
 }
 #endif // TIMESERIES_H

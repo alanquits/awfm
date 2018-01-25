@@ -28,6 +28,8 @@ namespace awfm {
         virtual double drawdownAtWell(Well &well, double x, double y, double t)=0;
 
         void setWells(QList<Well> *wells) { wells_ = wells; }
+        virtual void toStdUnits(LengthUnit lu, TimeUnit tu)=0;
+        virtual void fromStdUnits(LengthUnit lu, TimeUnit tu)=0;
     };
 
 }

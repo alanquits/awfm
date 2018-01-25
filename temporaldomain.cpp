@@ -34,4 +34,18 @@ namespace awfm {
     {
         return w.wl().ts();
     }
+
+    void TemporalDomain::toStdUnits(TimeUnit tu)
+    {
+        for (int i = 0; i < ts_.size(); i++) {
+            ts_[i] *= Utility::conversionFactor(tu);
+        }
+    }
+
+    void TemporalDomain::fromStdUnits(TimeUnit tu)
+    {
+        for (int i = 0; i < ts_.size(); i++) {
+            ts_[i] /= Utility::conversionFactor(tu);
+        }
+    }
 }

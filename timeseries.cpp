@@ -36,6 +36,14 @@ namespace awfm {
 
     }
 
+    void Timeseries::debugToConsole()
+    {
+        for (int i = 0; i < data_.size(); i++) {
+            qDebug() << data_[i].t() << " " << data_[i].v() << "\n";
+        }
+        qDebug() << "\n\n";
+    }
+
 //    void Timeseries::readFromFile(QString file_path)
 //    {
 //        Timeseries ts = readTimeseriesFromFile(file_path);
@@ -457,6 +465,21 @@ namespace awfm {
     {
         for (size_t i = 0; i < data_.size(); i++) {
             data_[i].zeroBelow(min_value);
+        }
+    }
+
+    double Timeseries::valueAtT(double t)
+    {
+        assert(size() > 0 && t >= data_[0].t());
+
+        if (size() == 1) {
+            return data_[0].v();
+        }
+
+        for (int i = 1; i < size(); i++) {
+            if (t >= data_[i].t()) {
+                return data_[i].v();
+            }
         }
     }
 }
