@@ -20,6 +20,9 @@ namespace awfm {
         bool append(double t);
         bool append(Measure m);
 
+        double bandwidth();
+        void pop();
+
         void debugToConsole();
 
         void readFromFile(QString file_path);
@@ -43,6 +46,7 @@ namespace awfm {
          * is modified and returns void */
         void absolute();
         void averageByTolerance();
+        void averageByBandwidth(double max_bandwidth);
         void averageBySign();
         void consolidateZeros();
         Timeseries deltaValues();

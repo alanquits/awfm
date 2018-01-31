@@ -25,7 +25,7 @@ namespace awfm {
         virtual QString modelTypeAsString()=0;
 
         double drawdown(QList<Well> &wells, double x, double y, double t);
-        virtual double drawdownAtWell(Well &well, double x, double y, double t)=0;
+        virtual double drawdownAtWell(Well &well, double x, double y, double t, bool spinup=false)=0;
 
         void setWells(QList<Well> *wells) { wells_ = wells; }
         virtual void toStdUnits(LengthUnit lu, TimeUnit tu)=0;

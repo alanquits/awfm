@@ -135,6 +135,19 @@ namespace awfm {
         results_["wl"] = QList<double>();
     }
 
+    void Well::deleteWindowAt(double t)
+    {
+        for(int i = 0; i < windows_.size(); i++) {
+            double w0 = windows_[i].first;
+            double wf = windows_[i].second;
+
+            if (w0 <= t && t < wf) {
+                windows_.removeAt(i);
+                return;
+            }
+        }
+    }
+
     void Well::appendResult(double t, double h0, double s_aq, double s_w)
     {
         results_["t"].push_back(t);
@@ -187,13 +200,17 @@ namespace awfm {
         }
         double Q = q_.valueAtT(t);
 
+        if (Utility::floatCompare(Q, 0)) {
+            return 0;
+        }
+
         double s_w = 0;
         if (turbulant_well_loss) {
             double C = cAtT(t, turbulant_well_loss, transient_well_loss);
             s_w += C*pow(Q, 2);
         }
 
-        if (turbulant_well_loss) {
+        if (laminar_well_loss) {
             double B = bAtT(t, laminar_well_loss, transient_well_loss);
             s_w += B*Q;
         }
@@ -259,5 +276,12 @@ namespace awfm {
     double Well::distanceTo(Well &w)
     {
         return distanceTo(w.x(), w.y());
+    }
+
+    bool Well::insertWindow(double t0, double tf)
+    {
+        // TODO check if windows are valid
+        windows_.append(QPair<double, double>(t0, tf));
+        return true;
     }
 }

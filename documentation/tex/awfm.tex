@@ -112,13 +112,37 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis risus ante, auctor
 \chapter{Mathematical Model}
 
 \section{Forward Model}
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. \\ Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. \\ Lorem ipsum list:
+The forward model estimates water level elevation ($h$) at any point in time from three components: 
+recoverable water level ($h_0$), aquifer drawdown ($s_{aq}$), and well loss ($s_{wl}$).
 
-\subsection{Recoverable Water Level}
+$$h = h_0 - s_{aq} - s_{wl}$$
 
-\subsection{Aquifer Drawdown Model}
+\emph{Recoverable water level} is defined as the elevation to which water level in a well
+would recover if all pumping was stopped. It may be modeled as either steady state or 
+transient. In the steady-state case, a recoverable water level does not change through time
+and is equivalent to the static water level appearing in many analytical groundwater solutions.
+In the transient case, recoverable water level is modeled as a linear function through time.
 
-\subsection{Well-Loss Model}
+
+$$h_0(t) = h_0(0) + \frac{\Delta h}{\Delta t}t$$
+
+
+The \emph{aquifer drawdown model} is an analytical solution for aquifer drawdown that 
+can accomodate multiple pumping rates across multiple wells. Currently, the AWFM supports
+the Theis and Hantush-Jacob solutions.
+
+\emph{Well loss} is modeled using Jacob's (ref?) empirical formula:
+
+$$s_{wl} = CQ^2 + BQ$$
+
+$Q$ is the instantaneous pumping rate at a given well. Coefficients $B$ and $C$
+represent well losses due to laminar and turbulant flow, respectively. 
+$B$ and $C$ can either be constant through time, or modeled using the linear
+functions:
+
+$$B(t) = B(0) + \frac{\Delta B}{\Delta t}t$$
+$$C(t) = C(0) + \frac{\Delta C}{\Delta t}t$$
+
 
 \section{Parameter Estimation}
 
@@ -200,40 +224,6 @@ constant time step for input into a numerical model.
 \section{Simple Pumping Test}
 
 \section{Analysis With Realistic Data}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Sample table                                        %
-% Source: www1.maths.leeds.ac.uk/latex/TableHelp1.pdf %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\begin{table}[ht]
-%\caption{Sample table} % title of Table
-%\centering % used for centering table
-%\begin{tabular}{c c c c}
-% centered columns (4 columns)
-%\hline\hline %inserts double horizontal lines
-%S. No. & Column\#1 & Column\#2 & Column\#3 \\ [0.5ex]
-% inserts table
-%heading
-%\hline % inserts single horizontal line
-%1 & 50 & 837 & 970 \\
-%2 & 47 & 877 & 230 \\
-%3 & 31 & 25 & 415 \\
-%4 & 35 & 144 & 2356 \\
-%5 & 45 & 300 & 556 \\ [1ex] % [1ex] adds vertical space
-%\hline %inserts single line
-%\end{tabular}
-%\label{table:nonlin} % is used to refer this table in the text
-%\end{table}
-
-%Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. \\ Lorem ipsum list:
-%\begin{itemize}
-%\item Mauris sit amet nulla mi, vitae rutrum ante.
-%\item Maecenas quis nulla risus, vel tincidunt ligula.
-%\item Nullam ac enim neque, non \emph{dapibus} mauris.
-%\end{itemize}
-
-%\noindent Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis risus ante, auctor et pulvinar non, posuere ac lacus. Praesent egestas nisi id metus rhoncus ac lobortis sem hendrerit. Etiam et sapien eget lectus interdum posuere sit amet ac urna\footnote{Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis risus ante, auctor et pulvinar non, posuere ac lacus.}:
 
 
 \end{document}

@@ -64,6 +64,7 @@
 #include "modelio.h"
 #include "unitsdlg.h"
 #include "welllossdlg.h"
+#include "windowsdlg.h"
 
 // ![0]
 
@@ -134,7 +135,7 @@ void MainWindow::createActions()
     connect(observedHeadAct, &QAction::triggered, this, &MainWindow::editObservedHeads);
 
     windowsAct = new QAction(tr("&Windows"), this);
-    connect(windowsAct, &QAction::triggered, this, &MainWindow::dummySlot);
+    connect(windowsAct, &QAction::triggered, this, &MainWindow::editWindows);
 
     runPestAct = new QAction(tr("&Run"), this);
     connect(runPestAct, &QAction::triggered, this, &MainWindow::dummySlot);
@@ -262,6 +263,7 @@ void MainWindow::editUnits()
         model_.setLengthUnit(dlg.lengthUnit());
         model_.setTimeUnit(dlg.timeUnit());
         emit modelChanged();
+        setDirty(true);
     }
 }
 
@@ -270,6 +272,7 @@ void MainWindow::editWells()
     EditWellsDlg dlg(&model_);
     if (dlg.exec()) {
         model_.setWells(dlg.wells());
+        model_.setOption("h0_transient_on", dlg.transient());
         setDirty(true);
         viewTimeseriesWidget->setModel(&model_);
         emit modelChanged();
@@ -294,6 +297,7 @@ void MainWindow::editWellLoss()
             model_.setOption(key, options[key]);
         }
         emit modelChanged();
+        setDirty(true);
     }
 }
 
@@ -347,6 +351,49 @@ void MainWindow::editObservedHeads()
             setDirty(true);
             emit modelChanged();
     }
+}
+
+void MainWindow::editWindows()
+{
+
+    WindowsDlg *dlg = new WindowsDlg(&model_, viewTimeseriesWidget->wellIndex());
+    dlg->setWindowFlags(Qt::WindowStaysOnTopHint);
+    fileMenu->setEnabled(false);
+    modelMenu->setEnabled(false);
+    pestMenu->setEnabled(false);
+
+    dlg->show();
+
+    connect(dlg, SIGNAL(accepted()),
+            this, SLOT(enableMenus()));
+
+    connect(dlg, SIGNAL(rejected()),
+            this, SLOT(enableMenus()));
+
+    connect(viewTimeseriesWidget, SIGNAL(wellSelectChangedSignal(int)),
+            dlg, SLOT(wellChanged(int)));
+
+    connect(viewTimeseriesWidget->chartViewRef(), SIGNAL(windowInserted(double,double)),
+            dlg, SLOT(insertWindow(double,double)));
+
+    connect(viewTimeseriesWidget->chartViewRef(), SIGNAL(windowDeleted(double)),
+            dlg, SLOT(deleteWindow(double)));
+
+    connect(dlg, SIGNAL(wellWindowsChanged(awfm::Well*)),
+            viewTimeseriesWidget->chartViewRef(), SLOT(drawWellWindows(awfm::Well*)));
+
+    viewTimeseriesWidget->setWindowEditingModeOn(true);
+
+}
+
+void MainWindow::enableMenus()
+{
+    fileMenu->setEnabled(true);
+    modelMenu->setEnabled(true);
+    pestMenu->setEnabled(true);
+
+    //
+    viewTimeseriesWidget->setWindowEditingModeOn(false);
 }
 
 void MainWindow::runModel()

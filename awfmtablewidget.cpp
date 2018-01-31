@@ -80,3 +80,24 @@ void AWFMTableWidget::showVerticalHeaderContextmenu(const QPoint &pos)
     }
 }
 
+void AWFMTableWidget::setColumnEditable(int column_idx, bool editable)
+{
+    QFont font;
+    bool is_italic = editable ? false : true;
+    font.setItalic(is_italic);
+
+    QColor color = editable ? QColor(0, 0, 0)         // black
+                            : QColor(230, 230, 230);  // light gray
+
+    for (int row = 0; row < rowCount(); row++) {
+        QTableWidgetItem *twi = item(row, column_idx);
+        twi->setTextColor(color);
+        twi->setFont(font);
+        if (editable) {
+            twi->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEditable|Qt::ItemIsEnabled);
+        } else {
+            twi->setFlags(twi->flags() &  ~Qt::ItemIsEditable);
+        }
+    }
+}
+

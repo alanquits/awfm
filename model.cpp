@@ -87,10 +87,6 @@ namespace awfm {
         aquiferDrawdownModel_->toStdUnits(lengthUnit_, timeUnit_);
 
 
-//        QList<double> ts_at_well;
-//        ts_at_well = temporalDomain_.domainType() == TEMPORALDOMAIN_ATWELLS
-//                    ? wells_[idx].wl().ts()
-//                    : temporalDomain_.ts();
 
         Well *observation_well = wellRef(idx);
         observation_well->clearResults();

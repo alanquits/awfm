@@ -36,6 +36,16 @@ namespace awfm {
 
     }
 
+    double Timeseries::bandwidth()
+    {
+        return maxV() - minV();
+    }
+
+    void Timeseries::pop()
+    {
+        data_.pop_back();
+    }
+
     void Timeseries::debugToConsole()
     {
         for (int i = 0; i < data_.size(); i++) {
@@ -78,6 +88,34 @@ namespace awfm {
         for (size_t i = 0; i < data_.size(); i++) {
             data_[i].absolute();
         }
+    }
+
+    void Timeseries::averageByBandwidth(double max_bandwidth)
+    {
+        if (data_.size() <= 1) {
+            return;
+        }
+
+        QList<awfm::Measure> data_new;
+        Timeseries ts_partial;
+
+        for (int i = 0; i < data_.size(); i++) {
+            ts_partial.append(t(i), v(i));
+            if (ts_partial.bandwidth() > max_bandwidth) {
+                ts_partial.pop();
+                double t_part = ts_partial.t(0);
+                double v_part = ts_partial.valueMean();
+                data_new.append(Measure(t_part, v_part));
+
+                ts_partial = Timeseries();
+                ts_partial.append(t(i), v(i));
+            }
+        }
+        double t_part = ts_partial.t(0);
+        double v_part = ts_partial.valueMean();
+        data_new.append(Measure(t_part, v_part));
+
+        data_ = data_new;
     }
 
     void Timeseries::averageBySign()
@@ -477,9 +515,12 @@ namespace awfm {
         }
 
         for (int i = 1; i < size(); i++) {
-            if (t >= data_[i].t()) {
-                return data_[i].v();
+            double prev_t = data_[i-1].t();
+            double curr_t = data_[i].t();
+            if (prev_t <= t && t < curr_t) {
+                return data_[i-1].v();
             }
         }
+        return data_.last().v();
     }
 }

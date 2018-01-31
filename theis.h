@@ -17,8 +17,8 @@ namespace awfm {
     public:
         Theis(double S, double T);
         virtual AquiferDrawdownModel modelType() { return THEIS; }
-        virtual QString modelTypeAsString() { return "Theis"; }
-        virtual double drawdownAtWell(Well &w, double x, double y, double t);
+        virtual QString modelTypeAsString() { return "theis"; }
+        virtual double drawdownAtWell(Well &w, double x, double y, double t, bool spinup=false);
 
         double T() { return T_; }
         double S() { return S_; }

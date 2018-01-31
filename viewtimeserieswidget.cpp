@@ -1,7 +1,10 @@
 #include "viewtimeserieswidget.h"
+#include "utility.h"
 
 #include <cmath>
 
+#include "awfmchart.h"
+#include "awfmchartview.h"
 #include <QtCharts/QChart>
 #include <QtCharts/QChartView>
 #include <QtCharts/QLineSeries>
@@ -66,7 +69,9 @@ void ViewTimeseriesWidget::initWidgets()
     observedPumpingRatesCheckBox->setChecked(true);
     observedWaterLevelsCheckBox->setChecked(true);
     ModeledWaterLevelsCheckBox->setChecked(true);
-    chartView = new QChartView();
+//    chartView = new QChartView();
+    chartView = new AWFMChartView();
+    chartView->setRubberBand(QChartView::HorizontalRubberBand);
 
     connect(wellList, SIGNAL(currentRowChanged(int)),
             this, SLOT(wellSelectionChanged(int)));
@@ -174,6 +179,17 @@ int ViewTimeseriesWidget::wellIndex()
     return wellList->currentRow();
 }
 
+void ViewTimeseriesWidget::setWindowEditingModeOn(bool mode_on)
+{
+    chartView->setWindowEditingModeOn(mode_on);
+}
+
+void ViewTimeseriesWidget::mousePressEvent(QMouseEvent *evt)
+{
+    QPoint pos = evt->pos();
+    return;
+}
+
 void ViewTimeseriesWidget::drawChart()
 {
     bool chart_is_available = false;
@@ -187,7 +203,7 @@ void ViewTimeseriesWidget::drawChart()
     QValueAxis *yAxis2 = new QValueAxis();
 
     awfm::Well *w = model->wellRef(idx);
-    QChart *chart = new QChart();
+    AWFMChart *chart = new AWFMChart();
 
     //xAxis->applyNiceNumbers();
     chart->addAxis(xAxis, Qt::AlignBottom);
@@ -239,10 +255,13 @@ void ViewTimeseriesWidget::drawChart()
         && observedWaterLevelsCheckBox->isChecked()) {
         chart_is_available = true;
         awfm::Timeseries wl = w->wl();
-        QLineSeries *wl_series = new QLineSeries();
+        //QLineSeries *wl_series = new QLineSeries();
+        QScatterSeries *wl_series = new QScatterSeries();
+        wl_series->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+        wl_series->setBorderColor(QColor(0, 0, 0));
+        wl_series->setColor(QColor(255, 255, 255));
 
         if (wl.size() > 0) {
-            //yAxis2->applyNiceNumbers();
             chart->addAxis(yAxis2, Qt::AlignRight);
         }
 
@@ -268,9 +287,9 @@ void ViewTimeseriesWidget::drawChart()
         }
 
         QLineSeries *wl_series = new QLineSeries();
+        wl_series->setColor(QColor(0, 0, 255));
 
         if (wl.size() > 0) {
-            //yAxis2->applyNiceNumbers();
             chart->addAxis(yAxis2, Qt::AlignRight);
         }
 
@@ -284,21 +303,29 @@ void ViewTimeseriesWidget::drawChart()
     }
 
 
+
     if (chart_is_available) {
         chart->setTitle(w->name());
         chart->legend()->setAlignment(Qt::AlignBottom);
 
-        xAxis->setTitleText("Time (unit)");
-        yAxis1->setTitleText("Flow (unit)");
-        yAxis2->setTitleText("Water Level (unit)");
+        xAxis->setTitleText(QString("Time (%1)")
+            .arg(awfm::Utility::unitAsString(model->timeUnit())));
+        yAxis1->setTitleText(QString("Flow (%1)")
+                             .arg(awfm::Utility::unitAsString(model->dischargeUnit())));
+        yAxis2->setTitleText(QString("Water Level Elevation (%1)")
+                             .arg(awfm::Utility::unitAsString(model->lengthUnit())));
+
+        xAxis->applyNiceNumbers();
+        yAxis1->applyNiceNumbers();
+        yAxis2->applyNiceNumbers();
 
 
+        if (chartView->windowEditingModeOn()) {
+            chartView->drawWellWindows(w);
+        }
+
+        chartView->setChart(chart);
     }
-
-    xAxis->applyNiceNumbers();
-    yAxis1->applyNiceNumbers();
-    yAxis2->applyNiceNumbers();
-    chartView->setChart(chart);
 }
 
 void ViewTimeseriesWidget::wellSelectionChanged(int idx)
@@ -311,4 +338,5 @@ void ViewTimeseriesWidget::wellSelectionChanged(int idx)
     observedWaterLevelsCheckBox->setEnabled(w->wl().size() > 0);
     ModeledWaterLevelsCheckBox->setEnabled(w->hasResults());
     drawChart();
+    emit wellSelectChangedSignal(idx);
 }

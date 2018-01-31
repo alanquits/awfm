@@ -1,0 +1,94 @@
+<number>: <integer>|<float>
+<dquote>: "
+<string>: <dqoute> [A-z0-9\_-]+ <dquote>
+
+<opening_stmt> : "new" | open <string>
+
+<run_stmt> : "run"
+<closing_stmt> : "save" <string>
+
+<stmt_separator> : "\n\n" | ";"
+
+<stmt> : <ts_scale_translate_stmt>
+       | <ts_constraint_stmt>
+       | <ts_project_stmt>
+       | <ts_reduce_stmt>
+
+<script> : <opening_stmt> <stmt>* <closing_stmt>
+
+<flag> : "transient h0"
+       | "turbulant well loss"
+       | "C"
+       | "laminar well loss"
+       | "B"
+       | "transient well loss"
+
+<ts_action_operation> : "scale"
+                      | "translate"
+
+<ts_type> : "pumping rate"
+          | "water level"
+
+<ts_type_plural> : "pumping rates"
+                 | "water levels"
+
+<ts_subtype> : "times"
+             | "values"
+
+<well_id> : <string>
+
+<well_identifier> : <well_id>
+                  | "all wells"
+
+                  <import_destination> : "wells" | <ts_type_plural>
+
+<ts_constraint_specifier_stmt> : "magnitude of at least" <number>
+                               | "minimum of" <number>
+                               | "maximum of" <number>
+
+<ts_reduce_specifier_stmt> : "by averaging"
+                           | "with bandwidth of" <number>
+
+<ts_modify_value_stmt_specifier> : "remove" | "interpolate"
+
+<ts_scale_translate_stmt> : <ts_operation> <ts_type> <ts_subtype> "at" <well_identifier> by <number>
+
+<ts_constraint_stmt> : "constrain" <ts_type_plural> "at" <well_identifier> "to" <range_constraint_stmt>
+
+<ts_project_stmt> : "project" <ts_type_plural> "at" <well_identifier> "onto line" <number> <number> ".." <number>
+
+<ts_reduce_stmt> : "reduce" <ts_type_plural> "at" <well_identifier> <ts_reduce_specifier_stmt>
+
+<ts_modify_value_stmt> : <ts_modify_value_stmt_specifier> <ts_type_plural> "where" <number>
+
+<use_stmt> : "use" <flag>
+
+
+new
+
+use ...
+    transient h0;
+    turbulant well loss;
+    laminar well loss;
+
+scale pumping rate values at all wells by 10;
+translate pumping rate values at all wells by 10;
+constrain pumping rates to magnitude of at least 100;
+constrain pumping rates to minimum of -50;
+constrain pumping rates to maximum of 400;
+
+project water levels onto line 0 2 .. 50000
+
+reduce pumping rates by averaging;
+reduce pumping rates with bandwidth of 10;
+
+remove pumping rates where -9999
+interpolate pumping rates where -9999
+
+import wells from "file.csv" mapping
+    "wellHeader" to "name"
+    "easting" to "x"
+    "northing" to "y"
+    "rw" to "rw"
+    "h0" to "h0"
+    "dh0" to "dh0"

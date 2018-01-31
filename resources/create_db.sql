@@ -58,6 +58,13 @@ create table settings (
   , h0_transient_on boolean default false
 );
 
+insert into settings 
+(length_unit, time_unit, discharge_unit, aquifer_drawdown_model, well_loss_turbulant_on, 
+    well_loss_laminar_on, well_loss_transient_on, h0_transient_on)
+values 
+('meters', 'days', 'm3/day', 'theis', 0, 0, 0, 0);
+                      
+
 create table wells (
     name text primary key
   , x real

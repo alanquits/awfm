@@ -1,0 +1,22 @@
+\BOOKMARK [0][-]{chapter.1}{Mathematical Model}{}% 1
+\BOOKMARK [1][-]{section.1.1}{Forward Model}{chapter.1}% 2
+\BOOKMARK [1][-]{section.1.2}{Parameter Estimation}{chapter.1}% 3
+\BOOKMARK [2][-]{subsection.1.2.1}{Aquifer Parameters}{section.1.2}% 4
+\BOOKMARK [2][-]{subsection.1.2.2}{Recoverable Water Level\(s\) and Well-Loss Coefficient\(s\)}{section.1.2}% 5
+\BOOKMARK [0][-]{chapter.2}{Using the Graphical Interface}{}% 6
+\BOOKMARK [1][-]{section.2.1}{Creating a New Model}{chapter.2}% 7
+\BOOKMARK [1][-]{section.2.2}{Units}{chapter.2}% 8
+\BOOKMARK [1][-]{section.2.3}{Data Importing}{chapter.2}% 9
+\BOOKMARK [2][-]{subsection.2.3.1}{CSV}{section.2.3}% 10
+\BOOKMARK [2][-]{subsection.2.3.2}{Excel}{section.2.3}% 11
+\BOOKMARK [2][-]{subsection.2.3.3}{SQLite}{section.2.3}% 12
+\BOOKMARK [1][-]{section.2.4}{Timeseries Processing}{chapter.2}% 13
+\BOOKMARK [2][-]{subsection.2.4.1}{Scale}{section.2.4}% 14
+\BOOKMARK [2][-]{subsection.2.4.2}{Translate}{section.2.4}% 15
+\BOOKMARK [2][-]{subsection.2.4.3}{Erroneous/Missing Data}{section.2.4}% 16
+\BOOKMARK [2][-]{subsection.2.4.4}{Project Onto Line}{section.2.4}% 17
+\BOOKMARK [2][-]{subsection.2.4.5}{Range Constraints}{section.2.4}% 18
+\BOOKMARK [2][-]{subsection.2.4.6}{Data Reduction}{section.2.4}% 19
+\BOOKMARK [0][-]{chapter.3}{Examples}{}% 20
+\BOOKMARK [1][-]{section.3.1}{Simple Pumping Test}{chapter.3}% 21
+\BOOKMARK [1][-]{section.3.2}{Analysis With Realistic Data}{chapter.3}% 22

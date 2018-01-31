@@ -19,6 +19,7 @@ public:
 public slots:
     void showContextMenu(const QPoint &p);
     void showVerticalHeaderContextmenu(const QPoint &p);
+    void setColumnEditable(int column_idx, bool editable);
 
 signals:
     void importSelected();

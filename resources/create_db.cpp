@@ -11,13 +11,6 @@ QString CREATE_DB_DEFINITION =
     "insert into meta (file_version_major, file_version_minor, created_on, last_updated, results_are_dirty_before)"
     "  values (0, 1, datetime('now'), datetime('now'), datetime('now'));"
 
-    "create table fk_unit_types ("
-    "    unit_type text"
-    ");"
-    "insert into fk_unit_types values ('length');"
-    "insert into fk_unit_types values ('time');"
-    "insert into fk_unit_types values ('discharge');"
-
     "create table fk_length_units ("
     "    unit text primary key"
     "  , multiplier real"
@@ -67,6 +60,13 @@ QString CREATE_DB_DEFINITION =
     "  , well_loss_transient_on boolean default false"
     "  , h0_transient_on boolean default false"
     ");"
+
+    "insert into settings "
+    "(length_unit, time_unit, discharge_unit, aquifer_drawdown_model, well_loss_turbulant_on, "
+    "    well_loss_laminar_on, well_loss_transient_on, h0_transient_on)"
+    "values "
+    "('meters', 'days', 'm3/day', 'theis', 0, 0, 0, 0);"
+    "                      "
 
     "create table wells ("
     "    name text primary key"

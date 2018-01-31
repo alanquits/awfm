@@ -40,6 +40,7 @@ bool ModelIO::getTheisParameters(double &S, double &T, QString *err_msg)
     QSqlQuery qry;
     qry.prepare("select name, value "
                 "from aquifer_drawdown_model_parameters ");
+    qry.exec();
     while (qry.next()) {
         QString name = qry.value(0).toString();
         double value = qry.value(1).toDouble();
@@ -60,8 +61,10 @@ bool ModelIO::getTheisParameters(double &S, double &T, QString *err_msg)
 bool ModelIO::loadSettings(Model *model, QString *err_msg)
 {
     QSqlQuery qry;
-    qry.prepare("select length_unit, time_unit, discharge_unit, aquifer_drawdown_model "
-                "from settings");
+    qry.prepare("select length_unit, time_unit, discharge_unit, aquifer_drawdown_model,"
+                "well_loss_turbulant_on, well_loss_laminar_on,"
+                "well_loss_transient_on, h0_transient_on "
+                         "from settings");
     qry.exec();
     while (qry.next()) {
         LengthUnit length_unit = Utility::lengthUnitFromString(qry.value(0).toString());
@@ -88,6 +91,17 @@ bool ModelIO::loadSettings(Model *model, QString *err_msg)
                     .arg(aquifer_drawdown_model_str);
             return false;
         }
+
+        bool well_loss_turbulant_on = qry.value(4).toBool();
+        bool well_loss_laminar_on = qry.value(5).toBool();
+        bool well_loss_transient_on = qry.value(6).toBool();
+        bool h0_transient_on = qry.value(7).toBool();
+
+
+        model->setOption("well_loss_turbulant_on", well_loss_turbulant_on);
+        model->setOption("well_loss_laminar_on", well_loss_laminar_on);
+        model->setOption("well_loss_transient_on", well_loss_transient_on);
+        model->setOption("h0_transient_on", h0_transient_on);
     }
     return true;
 }
@@ -233,7 +247,7 @@ bool ModelIO::save(Model *model, QString file_path, QString *err_msg)
             awfm::Utility::unitAsString(model->timeUnit()), err_msg))
         { return false; }
 
-        if (!setStaticVar("settings", "length_unit",
+        if (!setStaticVar("settings", "discharge_unit",
             awfm::Utility::unitAsString(model->dischargeUnit()), err_msg))
         { return false; }
 
@@ -248,7 +262,7 @@ bool ModelIO::save(Model *model, QString file_path, QString *err_msg)
                 << "h0_transient_on";
 
         foreach(QString option, options) {
-            if(!setStaticVar("settings", "well_loss_turbulant_on",
+            if(!setStaticVar("settings", option,
                              model->isOptionOn(option), err_msg)) {
                 return false;
             }

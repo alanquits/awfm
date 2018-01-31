@@ -1,0 +1,23 @@
+\select@language {english}
+\contentsline {chapter}{\numberline {1}Mathematical Model}{3}{chapter.1}
+\contentsline {section}{\numberline {1.1}Forward Model}{3}{section.1.1}
+\contentsline {section}{\numberline {1.2}Parameter Estimation}{4}{section.1.2}
+\contentsline {subsection}{\numberline {1.2.1}Aquifer Parameters}{4}{subsection.1.2.1}
+\contentsline {subsection}{\numberline {1.2.2}Recoverable Water Level(s) and Well-Loss Coefficient(s)}{4}{subsection.1.2.2}
+\contentsline {chapter}{\numberline {2}Using the Graphical Interface}{5}{chapter.2}
+\contentsline {section}{\numberline {2.1}Creating a New Model}{5}{section.2.1}
+\contentsline {section}{\numberline {2.2}Units}{5}{section.2.2}
+\contentsline {section}{\numberline {2.3}Data Importing}{5}{section.2.3}
+\contentsline {subsection}{\numberline {2.3.1}CSV}{5}{subsection.2.3.1}
+\contentsline {subsection}{\numberline {2.3.2}Excel}{5}{subsection.2.3.2}
+\contentsline {subsection}{\numberline {2.3.3}SQLite}{5}{subsection.2.3.3}
+\contentsline {section}{\numberline {2.4}Timeseries Processing}{5}{section.2.4}
+\contentsline {subsection}{\numberline {2.4.1}Scale}{5}{subsection.2.4.1}
+\contentsline {subsection}{\numberline {2.4.2}Translate}{6}{subsection.2.4.2}
+\contentsline {subsection}{\numberline {2.4.3}Erroneous/Missing Data}{6}{subsection.2.4.3}
+\contentsline {subsection}{\numberline {2.4.4}Project Onto Line}{6}{subsection.2.4.4}
+\contentsline {subsection}{\numberline {2.4.5}Range Constraints}{6}{subsection.2.4.5}
+\contentsline {subsection}{\numberline {2.4.6}Data Reduction}{6}{subsection.2.4.6}
+\contentsline {chapter}{\numberline {3}Examples}{7}{chapter.3}
+\contentsline {section}{\numberline {3.1}Simple Pumping Test}{7}{section.3.1}
+\contentsline {section}{\numberline {3.2}Analysis With Realistic Data}{7}{section.3.2}

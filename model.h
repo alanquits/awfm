@@ -10,6 +10,7 @@
 
 namespace awfm {
     class Model {
+
     private:
     AbstractAquiferDrawdownModel *aquiferDrawdownModel_;
     WellLossModel wellLossModel_;
@@ -31,8 +32,9 @@ namespace awfm {
 
     void setOption(QString option, bool is_on);
     void setAquiferDrawdownModel(AbstractAquiferDrawdownModel*);
-    void setWells(QList<Well> wells);
+
     void setTemporalDomain(TemporalDomain td);
+    void setWells(QList<Well> wells);
 
     void setLengthUnit(LengthUnit u) { lengthUnit_ = u; }
     void setTimeUnit(TimeUnit u) { timeUnit_ = u; }
@@ -45,6 +47,8 @@ namespace awfm {
     void run();
     void runAtWell(size_t idx);
     };
+
+
 }
 
 #endif //MODEL_H

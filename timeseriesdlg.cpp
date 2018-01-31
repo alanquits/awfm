@@ -331,6 +331,11 @@ void TimeseriesDlg::applyAveragingButtonClicked()
                     || well_name == selected_well_name) {
                 timeseriesList_[i].averageBySign();
             }
+        } else if (averageByToleranceRadio->isChecked()) {
+            if (!averageToleranceLineEdit->text().isEmpty()) {
+                double bandwidth = averageToleranceLineEdit->text().toDouble();
+                timeseriesList_[i].averageByBandwidth(bandwidth);
+            }
         }
     }
 

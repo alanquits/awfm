@@ -52,6 +52,7 @@
 #define MAINWINDOW_H
 
 #include <QtWidgets/QMainWindow>
+#include "windowsdlg.h"
 #include "model.h"
 #include "viewtimeserieswidget.h"
 
@@ -67,6 +68,8 @@ public slots:
     void editWellLoss();
     void editPumpingRates();
     void editObservedHeads();
+    void editWindows();
+    void enableMenus();
     void runModel();
     void openModel();
     void saveModel();
@@ -121,6 +124,7 @@ private:
 
 signals:
     void modelChanged();
+
 };
 
 #endif

@@ -16,23 +16,30 @@ EditWellsDlg::EditWellsDlg(awfm::Model *model)
     initWidgets();
     initLayout();
     fillTableWithWells();
+
+    transientCheckBox->setChecked(model->isOptionOn("h0_transient_on"));
+    connect(transientCheckBox, SIGNAL(stateChanged(int)),
+            this, SLOT(transientStateChanged()));
+    transientStateChanged();
     resize(900, 400);
 }
 
 void EditWellsDlg::initWidgets()
 {
+    transientCheckBox = new QCheckBox("Transient h0");
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
                                      | QDialogButtonBox::Cancel);
     connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+
     initTable();
 }
 
     void EditWellsDlg::initTable()
 {
     QStringList headers;
-    headers << "name" << "x" << "y" << "rw" << "h0";
-    table = new AWFMTableWidget(0, 5, headers);
+    headers << "name" << "x" << "y" << "rw" << "h0" << "dh0";
+    table = new AWFMTableWidget(0, 6, headers);
 
     connect(table, SIGNAL(importSelected()),
             this, SLOT(import()));
@@ -52,7 +59,12 @@ void EditWellsDlg::initWidgets()
 
 void EditWellsDlg::initLayout()
 {
+    QHBoxLayout *topLayout = new QHBoxLayout();
+    topLayout->addStretch();
+    topLayout->addWidget(transientCheckBox);
+
     QVBoxLayout *mainLayout = new QVBoxLayout();
+    mainLayout->addLayout(topLayout);
     mainLayout->addWidget(table);
     mainLayout->addWidget(buttonBox);
     setLayout(mainLayout);
@@ -84,6 +96,11 @@ void EditWellsDlg::deleteRows(QList<int> selected_rows)
     fillTableWithWells();
 }
 
+void EditWellsDlg::transientStateChanged()
+{
+    table->setColumnEditable(5, transientCheckBox->isChecked());
+}
+
 void EditWellsDlg::fillTableWithWells()
 {
     table->setRowCount(wells_.size());
@@ -94,6 +111,7 @@ void EditWellsDlg::fillTableWithWells()
         table->setItem(row, 2, new QTableWidgetItem(QString::number(w.y())));
         table->setItem(row, 3, new QTableWidgetItem(QString::number(w.rw())));
         table->setItem(row, 4, new QTableWidgetItem(QString::number(w.h0())));
+        table->setItem(row, 5, new QTableWidgetItem(QString::number(w.dh0())));
         row++;
     }
 }
@@ -125,6 +143,10 @@ void EditWellsDlg::import()
 {
     QStringList targets;
     targets << "name" << "x" << "y" << "rw" << "h0";
+    if (transientCheckBox->isChecked()) {
+        targets << "dh0";
+    }
+
     ImportDlg *dlg = new ImportDlg(targets);
 
     if (!dlg->exec()) {
@@ -148,8 +170,20 @@ void EditWellsDlg::import()
         double y = df->getDouble(df->columnIndex(target_map["y"]));
         double rw = df->getDouble(df->columnIndex(target_map["rw"]));
         double h0 = df->getDouble(df->columnIndex(target_map["h0"]));
-        wells_.append(awfm::Well(name, x, y, rw, h0));
+
+        awfm::Well w = awfm::Well(name, x, y, rw, h0);
+
+        if (transientCheckBox->isChecked()) {
+            double dh0 = df->getDouble(df->columnIndex(target_map["dh0"]));
+            w.setDeltaH0(dh0);
+        }
+
+        wells_.append(w);
+
     }
+    table->setColumnEditable(5, true);
     fillTableWithWells();
+    transientStateChanged();
+
     delete df;
 }

@@ -1,6 +1,8 @@
 #ifndef WELL_H
 #define WELL_H
 
+#include <QList>
+#include <QPair>
 #include <QString>
 #include "timeseries.h"
 
@@ -22,6 +24,7 @@ namespace awfm {
         Timeseries q_;     // observed pumping
         Timeseries dQ_;    // delta pumping (used by aquifer drawdown models)
 
+        QList<QPair<double, double> > windows_;
 
 //        Timeseries sAq_;   // modeled aquifer drawdown
 //        Timeseries sLoss_; // modeled well loss
@@ -63,6 +66,7 @@ namespace awfm {
         void fromStdUnits(LengthUnit lu, TimeUnit tu, DischargeUnit du);
 
         void clearResults();
+        void deleteWindowAt(double t);
         void appendResult(double t, double h0, double s_aq, double s_w);
         bool hasResults();
         void setResult(QString result_key, QList<double> ts);
@@ -79,6 +83,9 @@ namespace awfm {
 
         double distanceTo(double x, double y);
         double distanceTo(Well &w);
+
+        bool insertWindow(double t0, double tf);
+        QList<QPair<double, double> > windows() { return windows_; }
     };
 }
 #endif // WELL_H

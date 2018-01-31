@@ -11,6 +11,8 @@ find_package(Qt5Sql REQUIRED)
 
 set(NAME_SOURCES
 #    testing.cpp
+    awfmchartview.cpp
+    awfmchart.cpp
     aquiferdrawdowndlg.cpp
     csvdataframe.cpp
     awfmtablewidget.cpp
@@ -43,10 +45,13 @@ set(NAME_SOURCES
     xlsxdataframe.cpp
     unitsdlg.cpp
     welllossdlg.cpp
+    windowsdlg.cpp
     resources/create_db.cpp
 )
 
 set(NAME_HEADERS measure.h
+    awfmchartview.h
+    awfmchart.h
     aquiferdrawdowndlg.h
     csvdataframe.h
     specialfunctions.h
@@ -78,6 +83,7 @@ set(NAME_HEADERS measure.h
     xlsxdataframe.h
     unitsdlg.h
     welllossdlg.h
+    windowsdlg.h
     resources/create_db.h
 )
 
