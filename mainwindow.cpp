@@ -55,10 +55,12 @@
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QMessageBox>
 #include <QFileDialog>
+#include <QTextStream>
 
 #include "mainwindow.h"
 #include "aquiferdrawdowndlg.h"
 #include "editwellsdlg.h"
+#include "minpacksettingsdlg.h"
 #include "timeseriesdlg.h"
 #include "theis.h"
 #include "modelio.h"
@@ -128,8 +130,11 @@ void MainWindow::createActions()
     runModelAct = new QAction(tr("&Run"), this);
     connect(runModelAct, &QAction::triggered, this, &MainWindow::runModel);
 
+    exportResultsAct = new QAction(tr("&Export Results"), this);
+    connect(exportResultsAct, &QAction::triggered, this, &MainWindow::exportResults);
+
     pestSettingsAct = new QAction(tr("&Settings"), this);
-    connect(pestSettingsAct, &QAction::triggered, this, &MainWindow::dummySlot);
+    connect(pestSettingsAct, &QAction::triggered, this, &MainWindow::editPestSettings);
 
     observedHeadAct = new QAction(tr("Observed &Heads"), this);
     connect(observedHeadAct, &QAction::triggered, this, &MainWindow::editObservedHeads);
@@ -160,6 +165,7 @@ void MainWindow::createMenus()
     modelMenu->addAction(wellLossAct);
     modelMenu->addSeparator();
     modelMenu->addAction(runModelAct);
+    modelMenu->addAction(exportResultsAct);
     menuBar()->addMenu(modelMenu);
 
     pestMenu = new QMenu(tr("&Parameter Estimation"), this);
@@ -301,6 +307,17 @@ void MainWindow::editWellLoss()
     }
 }
 
+void MainWindow::editPestSettings()
+{
+    MinPackParameters *mp = new MinPackParameters(4, 3);
+    MinPackSettingsDlg *dlg = new MinPackSettingsDlg(mp);
+    if (dlg->exec()) {
+        // dialog accepted
+    } else {
+        // dialog rejected
+    }
+}
+
 void MainWindow::editPumpingRates()
 {
     QStringList well_names;
@@ -383,7 +400,7 @@ void MainWindow::editWindows()
             viewTimeseriesWidget->chartViewRef(), SLOT(drawWellWindows(awfm::Well*)));
 
     viewTimeseriesWidget->setWindowEditingModeOn(true);
-
+    viewTimeseriesWidget->chartViewRef()->drawWellWindows(dlg->currentWellRef());
 }
 
 void MainWindow::enableMenus()
@@ -394,6 +411,44 @@ void MainWindow::enableMenus()
 
     //
     viewTimeseriesWidget->setWindowEditingModeOn(false);
+    viewTimeseriesWidget->drawChart();
+}
+
+void MainWindow::exportResults()
+{
+    QString file_name = QFileDialog::getSaveFileName(this, tr("Export File As"),
+                               "",
+                               tr("CSV (*.csv)"));
+    if (file_name.isEmpty()) {
+        return;
+    }
+
+    QFile file(file_name);
+    if (!file.open(QIODevice::WriteOnly)) {
+        QMessageBox::warning(this, "Could not open file", "Unable to open file for writing. Make sure you have permission to access this directory", QMessageBox::Ok);
+        return;
+    }
+
+    QTextStream os(&file);
+    os << "name,t,h0,s_aq,s_w,wl\n";
+    foreach(awfm::Well w, model_.wells()) {
+        if (!w.hasResults()) {
+            continue;
+        }
+
+        QList<double> ts = w.result("t");
+        QList<double> s_aqs = w.result("s_aq");
+        QList<double> s_ws = w.result("s_w");
+        QList<double> h0s = w.result("h_0");
+        QList<double> wls = w.result("wl");
+        for (int i = 0; i < ts.length(); i++) {
+            os << w.name() << ",";
+            os << ts[i] << "," << h0s[i] << ","
+               << s_aqs[i] << "," << s_ws[i] << ","
+               << wls[i] << "\n";
+        }
+    }
+    file.close();
 }
 
 void MainWindow::runModel()

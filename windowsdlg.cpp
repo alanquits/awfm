@@ -15,9 +15,9 @@ WindowsDlg::WindowsDlg(awfm::Model *model, size_t start_idx)
     model_ = model;
     wells_ = model->wells(); // copy of wells to modify
     initWidgets();
-    wellChanged(start_idx);
+    //wellChanged(start_idx);
     initLayout();
-
+    wellChanged(start_idx);
 
 }
 

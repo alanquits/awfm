@@ -136,7 +136,11 @@ void EditWellsDlg::cellChanged(QTableWidgetItem *item)
     case 4:
         wells_[row].setH0(item->text().toDouble());
         break;
+    case 5:
+        wells_[row].setDeltaH0(item->text().toDouble());
+        break;
     }
+
 }
 
 void EditWellsDlg::import()

@@ -20,6 +20,7 @@ public slots:
     void showContextMenu(const QPoint &p);
     void showVerticalHeaderContextmenu(const QPoint &p);
     void setColumnEditable(int column_idx, bool editable);
+    virtual void exportTable();
 
 signals:
     void importSelected();
@@ -27,6 +28,8 @@ signals:
     void insertAboveSelected(QList<int>);
     void insertBelowSelected(QList<int>);
     void deleteRowsSelected(QList<int>);
+
+
 
 };
 

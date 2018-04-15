@@ -34,6 +34,7 @@ public slots:
     void insertWindow(double t0, double tf);
     void deleteWindow(double t);
     QList<awfm::Well> wells() { return wells_; }
+    awfm::Well* currentWellRef() { return &wells_[wellIndex_]; }
     virtual void accept();
 
 signals:

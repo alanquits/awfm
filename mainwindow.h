@@ -66,10 +66,12 @@ public slots:
     void editUnits();
     void editWells();
     void editWellLoss();
+    void editPestSettings();
     void editPumpingRates();
     void editObservedHeads();
     void editWindows();
     void enableMenus();
+    void exportResults();
     void runModel();
     void openModel();
     void saveModel();
@@ -115,6 +117,7 @@ private:
     QAction *aquiferDrawdownAct;
     QAction *wellLossAct;
     QAction *runModelAct;
+    QAction *exportResultsAct;
 
     // Pest menu actions
     QAction *pestSettingsAct;

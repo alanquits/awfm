@@ -8,7 +8,7 @@ Application-Wide
 - add start date option in settings
 - save model if dirty on exit
 - delete unused source files
-- embed scripting language or develop console interface
+- embed scripting language or develop console interface?
 
 Edit Wells Dialog
 - fix precision
@@ -16,3 +16,4 @@ Edit Wells Dialog
 
 Timeseries Dialog
 - edit boxes to look better
+- make it impossible to add invalid windows (going through pumping rate changes)

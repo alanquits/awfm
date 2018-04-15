@@ -31,6 +31,9 @@ set(NAME_SOURCES
     dbio.cpp
     editwellsdlg.cpp
     importdlg.cpp
+    _minpack.f
+    minpack.cpp
+    minpacksettingsdlg.cpp
     modelio.cpp
 #    jacobwellloss.cpp
 #    jacobsimplifiedwellloss.cpp
@@ -67,6 +70,8 @@ set(NAME_HEADERS measure.h
     importdlg.h
 #    jacobwellloss.h
 #    jacobsimplifiedwellloss.h
+    minpack.h
+    minpacksettingsdlg.h
     model.h
 #    pumpingratesdlg.h
     utility.h

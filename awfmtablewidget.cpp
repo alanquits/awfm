@@ -1,6 +1,7 @@
 #include "awfmtablewidget.h"
 
 #include <QDebug>
+#include <QFileDialog>
 #include <QHeaderView>
 #include <QModelIndexList>
 #include <QMouseEvent>
@@ -20,6 +21,8 @@ AWFMTableWidget::AWFMTableWidget(int nrows, int ncols, QStringList headers)
     connect(vertical_header, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(showVerticalHeaderContextmenu(QPoint)));
 
+    connect(this, SIGNAL(exportSelected()),
+            this, SLOT(exportTable()));
 }
 
 void AWFMTableWidget::showContextMenu(const QPoint &pos)
@@ -97,6 +100,31 @@ void AWFMTableWidget::setColumnEditable(int column_idx, bool editable)
             twi->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEditable|Qt::ItemIsEnabled);
         } else {
             twi->setFlags(twi->flags() &  ~Qt::ItemIsEditable);
+        }
+    }
+}
+
+void AWFMTableWidget::exportTable()
+{
+    QString file_name = QFileDialog::getSaveFileName(this, tr("Export Table As"),
+                               "/home",
+                               tr("CSV (*.csv)"));
+
+    if (file_name.isEmpty()) {
+        return;
+    }
+
+    QFile file(file_name);
+    if (file.open(QIODevice::WriteOnly))
+    {
+        QTextStream os(&file);
+        os << headers_.join(',') << "\n";
+        for (int i = 0; i < rowCount(); i++) {
+            QStringList values;
+            for (int j = 0; j < columnCount(); j++) {
+                values.append(item(i, j)->text());
+            }
+            os << values.join(',') << "\n";
         }
     }
 }
